@@ -12,22 +12,29 @@
 <style>
 /* Layout: full-screen deck slides scrolling over one fixed WebGL particle "mind" that re-forms per slide; copy sits left, the 3D form sits right. */
 :root{
-  --ink:#050a14;
-  --surface:rgba(11,20,38,.68);
-  --surface-solid:#0b1426;
-  --line:rgba(150,180,225,.16);
-  --line-strong:rgba(150,180,225,.32);
-  --fg:#eaf0f7;
-  --muted:#97a7bd;
-  --flare:#ff6b3d;
-  --flare-ink:#1c0900;
-  --flare-soft:rgba(255,107,61,.16);
-  --cyan:#5fe3e8;
-  --cyan-soft:rgba(95,227,232,.12);
-  --veil-strong:rgba(5,10,20,.92);
-  --veil-mid:rgba(5,10,20,.6);
-  --veil-none:rgba(5,10,20,0);
-  --veil-mobile:rgba(5,10,20,.74);
+  --ink:#050505;
+  --surface:rgba(22,18,10,.62);
+  --surface-solid:#110f0a;
+  --line:rgba(245,197,66,.18);
+  --line-strong:rgba(245,197,66,.42);
+  --fg:#f7f3e8;
+  --muted:#bdb4a0;
+  --gold:#f5c542;
+  --gold-deep:#5c4510;
+  --on-accent:#140f02;
+  --gold-soft:rgba(245,197,66,.2);
+  --glow:#ffe9a8;
+  --glow-soft:rgba(255,233,168,.12);
+  --bronze:#b8862b;
+  --bronze-soft:rgba(184,134,43,.18);
+  --depth:#3d2e0d;
+  --depth-2:#1c1506;
+  --grad:linear-gradient(100deg,#fff1c1 0%,#f5c542 45%,#c08a24 100%);
+  --chrome:linear-gradient(100deg,#fff8e1 0%,#f5d77a 28%,#a9781f 52%,#ffe39a 74%,#fff8e1 100%);
+  --veil-strong:rgba(5,5,5,.9);
+  --veil-mid:rgba(5,5,5,.5);
+  --veil-none:rgba(5,5,5,0);
+  --veil-mobile:rgba(5,5,5,.72);
 
   --display:"Unbounded","Arial Black",system-ui,sans-serif;
   --body:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
@@ -47,13 +54,13 @@ html{scroll-behavior:smooth}
 body{
   margin:0;
   background:var(--ink);
-  background-image:radial-gradient(60vw 60vw at 85% 20%,var(--flare-soft),transparent 70%),radial-gradient(50vw 50vw at 70% 90%,var(--cyan-soft),transparent 70%);
+  background-image:radial-gradient(55vw 55vw at 88% 12%,var(--gold-soft),transparent 70%),radial-gradient(60vw 60vw at 10% 100%,var(--bronze-soft),transparent 70%),radial-gradient(45vw 45vw at 65% 80%,var(--glow-soft),transparent 70%);
   background-attachment:fixed;
   color:var(--fg);font-family:var(--body);font-size:var(--step-0);line-height:1.6;
   -webkit-font-smoothing:antialiased;overflow-x:clip;
 }
 a{color:inherit}
-a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--glow);outline-offset:3px;border-radius:6px}
 h1,h2,h3,p{margin:0}
 
 #stage{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
@@ -62,46 +69,47 @@ main{position:relative;z-index:2}
 
 /* top bar */
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--ink)}
-.progress{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:2px;z-index:30;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--flare),var(--cyan))}
+.progress{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:2px;z-index:30;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--gold),var(--glow))}
 .top{position:fixed;inset:0 0 auto;z-index:20;padding-top:env(safe-area-inset-top,0px);background:linear-gradient(180deg,var(--veil-strong),var(--veil-none))}
 .top-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase}
-.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;border:1.5px solid var(--flare);color:var(--flare);font-size:.78rem;letter-spacing:0}
+.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;border:1.5px solid var(--glow);color:var(--fg);font-size:.78rem;letter-spacing:0;box-shadow:0 0 18px var(--glow-soft),inset 0 0 12px var(--gold-soft);transform:perspective(200px) rotateY(-14deg)}
 .top-right{display:flex;align-items:center;gap:18px}
 .counter{font-family:var(--mono);font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.08em}
 
 .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:999px;font-family:var(--body);font-weight:700;font-size:.95rem;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .2s ease,background-color .2s ease,border-color .2s ease}
-.btn-primary{background:var(--flare);color:var(--flare-ink)}
-.btn-primary:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--grad);color:var(--on-accent);box-shadow:0 12px 30px -12px var(--gold),0 4px 0 var(--depth)}
+.btn-primary:hover{transform:translateY(-3px)}
 .btn-ghost{border-color:var(--line-strong);color:var(--fg);background:var(--surface)}
-.btn-ghost:hover{border-color:var(--cyan)}
+.btn-ghost:hover{border-color:var(--glow)}
 .btn-sm{padding:9px 16px;font-size:.85rem}
 .btn svg{width:16px;height:16px}
 
 .dots{position:fixed;top:50%;right:calc(env(safe-area-inset-right,0px) + 26px);transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:12px}
 .dots button{width:8px;height:8px;padding:0;border:0;border-radius:99px;background:var(--line-strong);cursor:pointer;transition:height .3s ease,background-color .3s ease}
-.dots button[aria-current="true"]{height:28px;background:var(--flare)}
+.dots button[aria-current="true"]{height:28px;background:var(--gold)}
 
 /* slides */
 .slide{position:relative;min-height:100svh;display:flex;align-items:center;padding-block:116px 84px}
 .wrap{width:100%;max-width:1280px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .col{max-width:660px}
-.eyebrow{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan)}
-.eyebrow .num{color:var(--flare)}
+.eyebrow{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--glow)}
+.eyebrow .num{color:var(--gold)}
 .eyebrow::after{content:"";width:48px;height:1px;background:var(--line-strong)}
 h2{margin-top:18px;font-family:var(--display);font-weight:700;font-size:var(--step-4);line-height:1.06;letter-spacing:-.02em;text-wrap:balance}
-h2 em{font-style:normal;color:var(--flare)}
+h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px var(--gold-soft))}
 .lead{margin-top:18px;font-size:var(--step-1);color:var(--muted);max-width:60ch}
 .lead b{color:var(--fg);font-weight:600}
 
 /* hero */
 #start{padding-bottom:140px}
 .wordmark{margin-top:22px;font-family:var(--display);font-weight:800;font-size:var(--step-5);line-height:.88;letter-spacing:-.045em;display:flex;flex-wrap:wrap;gap:0 .22em}
-.wordmark .five{color:var(--fg)}
-.wordmark .five i{font-style:normal;color:var(--flare)}
-.wordmark .minds{color:transparent;-webkit-text-stroke:1.5px var(--fg)}
+.wordmark > span{display:inline-block;transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s ease-out}
+.wordmark .five{background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(1px 1px 0 var(--gold-deep)) drop-shadow(2px 2px 0 var(--gold-deep)) drop-shadow(2px 2px 0 var(--depth)) drop-shadow(3px 3px 0 var(--depth-2)) drop-shadow(0 0 36px var(--gold-soft))}
+.wordmark .five i{font-style:normal}
+.wordmark .minds{color:var(--fg);text-shadow:1px 1px 0 var(--depth),2px 2px 0 var(--depth),3px 3px 0 var(--depth),4px 4px 0 var(--depth),5px 5px 0 var(--depth-2),6px 6px 0 var(--depth-2),7px 7px 0 var(--depth-2),8px 8px 0 var(--depth-2),14px 20px 34px var(--veil-strong)}
 .hero-line{margin-top:26px;font-family:var(--body);font-weight:600;font-size:var(--step-3);line-height:1.18;max-width:21ch;text-wrap:balance}
-.hero-line span{color:var(--cyan)}
+.hero-line span{color:var(--glow)}
 .hero .lead{max-width:54ch}
 .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
 .facts{margin-top:40px;max-width:740px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
@@ -114,25 +122,25 @@ h2 em{font-style:normal;color:var(--flare)}
 .ticker{position:absolute;left:0;right:0;bottom:0;overflow:hidden;border-top:1px solid var(--line);background:var(--veil-mid);padding-block:14px;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
 .ticker-track{display:flex;width:max-content;animation:tick 60s linear infinite}
 .ticker-track span{padding-right:22px;white-space:nowrap}
-.ticker-track span::after{content:"/";color:var(--flare);padding-left:22px}
+.ticker-track span::after{content:"/";color:var(--gold);padding-left:22px}
 @keyframes tick{to{transform:translateX(-50%)}}
 
 /* generic panels */
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .tilt{position:relative;transition:transform .25s ease,border-color .3s ease;transform-style:preserve-3d;will-change:transform}
-.tilt::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s ease;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),var(--flare-soft),transparent 70%)}
+.tilt::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s ease;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),var(--gold-soft),transparent 70%)}
 .tilt:hover{border-color:var(--line-strong)}
 .tilt:hover::before{opacity:1}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-family:var(--mono);font-size:.7rem;line-height:1.4;padding:3px 9px;border-radius:999px;border:1px solid var(--line-strong);color:var(--cyan);white-space:nowrap}
-.label{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--flare)}
+.chip{font-family:var(--mono);font-size:.7rem;line-height:1.4;padding:3px 9px;border-radius:999px;border:1px solid var(--line-strong);color:var(--glow);white-space:nowrap}
+.label{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 
 /* gap */
 .gap-grid{margin-top:44px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;max-width:1040px}
 .gap-item{padding:24px;display:flex;flex-direction:column;gap:12px}
 .gap-item h3{font-family:var(--display);font-weight:500;font-size:var(--step-1);line-height:1.3}
 .gap-item p{color:var(--muted);font-size:.94rem}
-.pitch{margin-top:28px;max-width:62ch;font-size:var(--step-1);border-left:2px solid var(--flare);padding-left:18px}
+.pitch{margin-top:28px;max-width:62ch;font-size:var(--step-1);border-left:2px solid var(--gold);padding-left:18px}
 
 /* learn */
 .topics{margin-top:40px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
@@ -144,11 +152,11 @@ h2 em{font-style:normal;color:var(--flare)}
 /* roadmap */
 .road{margin-top:44px;padding:30px 26px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;position:relative}
 .wk{position:relative;padding-top:30px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.wk::before{content:"";position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;border:2px solid var(--flare);background:var(--ink);z-index:1}
-.wk::after{content:"";position:absolute;top:5px;left:12px;right:-18px;height:2px;background:linear-gradient(90deg,var(--flare),var(--cyan));opacity:.45}
+.wk::before{content:"";position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;border:2px solid var(--gold);background:var(--ink);z-index:1}
+.wk::after{content:"";position:absolute;top:5px;left:12px;right:-18px;height:2px;background:linear-gradient(90deg,var(--gold),var(--glow));opacity:.45}
 .wk:last-child::after{display:none}
-.wk:last-child::before{background:var(--flare)}
-.wk .w{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;color:var(--flare);text-transform:uppercase}
+.wk:last-child::before{background:var(--gold)}
+.wk .w{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;color:var(--gold);text-transform:uppercase}
 .wk h3{font-family:var(--display);font-weight:500;font-size:.98rem;line-height:1.3}
 .wk p{font-size:.86rem;color:var(--muted);line-height:1.5}
 .road-note{margin-top:18px;color:var(--muted);font-size:.92rem;max-width:70ch}
@@ -157,27 +165,27 @@ h2 em{font-style:normal;color:var(--flare)}
 /* formats */
 .formats{margin-top:40px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
 .fmt{padding:26px;display:flex;flex-direction:column;gap:14px}
-.fmt.featured{border-color:var(--flare);background:linear-gradient(180deg,var(--flare-soft),var(--surface) 45%)}
+.fmt.featured{border-color:var(--gold);background:linear-gradient(180deg,var(--gold-soft),var(--surface) 45%)}
 .fmt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .fmt h3{font-family:var(--display);font-weight:500;font-size:var(--step-1);line-height:1.25}
-.tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--flare);color:var(--flare-ink);white-space:nowrap;font-weight:500}
+.tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--gold);color:var(--on-accent);white-space:nowrap;font-weight:500}
 .dur{font-family:var(--display);font-weight:800;font-size:var(--step-4);line-height:1;letter-spacing:-.03em}
 .dur small{font-family:var(--body);font-size:.9rem;font-weight:600;letter-spacing:0;color:var(--muted);margin-left:6px}
 .fmt ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:.92rem}
 .fmt li{display:flex;gap:10px;align-items:baseline}
-.fmt li::before{content:"";flex:none;width:6px;height:6px;border-radius:2px;background:var(--cyan);transform:translateY(-2px)}
+.fmt li::before{content:"";flex:none;width:6px;height:6px;border-radius:2px;background:var(--glow);transform:translateY(-2px)}
 .best{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
 .best b{color:var(--fg)}
 .when{margin-top:16px;padding:22px 26px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center}
 .days{display:flex;gap:6px}
 .day{width:46px;height:54px;border-radius:9px;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
-.day.on{background:var(--flare);border-color:var(--flare);color:var(--flare-ink);font-weight:500}
+.day.on{background:var(--gold);border-color:var(--gold);color:var(--on-accent);font-weight:500}
 .when-text{display:flex;flex-direction:column;gap:12px;min-width:0}
 .when-text p{font-size:.95rem}
-.when-text p b{color:var(--cyan);font-weight:600}
+.when-text p b{color:var(--glow);font-weight:600}
 .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:var(--mono);font-size:.76rem}
 .flow span{padding:5px 11px;border-radius:7px;border:1px solid var(--line-strong)}
-.flow i{font-style:normal;color:var(--flare)}
+.flow i{font-style:normal;color:var(--gold)}
 
 /* toolkit */
 .split{margin-top:40px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px}
@@ -192,7 +200,7 @@ h2 em{font-style:normal;color:var(--flare)}
 .credit{background:var(--surface-solid);padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
 .credit-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .credit b{font-weight:700;font-size:.95rem}
-.credit em{font-style:normal;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;color:var(--cyan);white-space:nowrap}
+.credit em{font-style:normal;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;color:var(--glow);white-space:nowrap}
 .credit span{font-size:.84rem;color:var(--muted);line-height:1.5}
 .disclaim{font-size:.82rem;color:var(--muted)}
 .oss{margin-top:16px;padding:18px 22px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
@@ -201,7 +209,7 @@ h2 em{font-style:normal;color:var(--flare)}
 /* career */
 .services{margin-top:40px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .svc{padding:22px;display:flex;flex-direction:column;gap:12px}
-.svc svg{width:30px;height:30px;color:var(--flare)}
+.svc svg{width:30px;height:30px;color:var(--gold)}
 .svc h3{font-family:var(--display);font-weight:500;font-size:1rem}
 .svc p{font-size:.88rem;color:var(--muted)}
 .intern{margin-top:14px;padding:26px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:28px;align-items:center}
@@ -248,7 +256,7 @@ h2 em{font-style:normal;color:var(--flare)}
   .road{grid-template-columns:minmax(0,1fr);padding:24px 20px 24px 22px;row-gap:22px}
   .wk{padding:0 0 0 28px}
   .wk::before{top:4px}
-  .wk::after,.wk:nth-child(3n)::after{display:block;top:18px;left:5px;right:auto;bottom:-22px;width:2px;height:auto;background:linear-gradient(180deg,var(--flare),var(--cyan))}
+  .wk::after,.wk:nth-child(3n)::after{display:block;top:18px;left:5px;right:auto;bottom:-22px;width:2px;height:auto;background:linear-gradient(180deg,var(--gold),var(--glow))}
   .wk:last-child::after{display:none}
   .counter{display:none}
   .day{width:auto;flex:1;height:50px}
@@ -281,7 +289,7 @@ h2 em{font-style:normal;color:var(--flare)}
 <main>
 
   <!-- 01 -->
-  <section class="slide hero" id="start" data-shape="brain" data-title="5X Minds">
+  <section class="slide hero" id="start" data-shape="face" data-title="5X Minds">
     <div class="wrap">
       <div class="col">
         <p class="eyebrow rise" style="--d:0">AI engineering programs for college students</p>
@@ -307,7 +315,7 @@ h2 em{font-style:normal;color:var(--flare)}
   </section>
 
   <!-- 02 -->
-  <section class="slide" id="gap" data-shape="galaxy" data-title="The gap">
+  <section class="slide" id="gap" data-shape="brain" data-title="The gap">
     <div class="wrap">
       <p class="eyebrow"><span class="num">02</span>The gap</p>
       <h2>College teaches how AI works. Recruiters hire students who have <em>built</em> with it.</h2>
@@ -665,7 +673,29 @@ h2 em{font-style:normal;color:var(--flare)}
     activate(idx);
     const max = document.documentElement.scrollHeight - innerHeight;
     bar.style.transform = `scaleX(${max > 0 ? Math.min(1, scrollY / max) : 0})`;
+    depth();
   }
+
+  // Slides tip back in 3D as they enter and leave the viewport
+  const wraps = slides.map(s => s.querySelector('.wrap'));
+  function depth() {
+    if (reduce) return;
+    const h = innerHeight;
+    slides.forEach((s, i) => {
+      const r = s.getBoundingClientRect();
+      let p = r.top > 0 ? r.top / h : r.bottom < h ? (r.bottom - h) / h : 0;
+      p = Math.max(-1, Math.min(1, p));
+      wraps[i].style.transform = p ? `perspective(1400px) translateZ(${(-Math.abs(p) * 180).toFixed(1)}px) rotateX(${(p * 12).toFixed(2)}deg)` : '';
+      wraps[i].style.opacity = (1 - Math.abs(p) * 0.45).toFixed(3);
+    });
+  }
+
+  // Extruded wordmark turns toward the pointer
+  const marks = document.querySelectorAll('.wordmark');
+  if (!reduce) addEventListener('pointermove', e => {
+    const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
+    marks.forEach(m => { m.style.setProperty('--ry', `${(x * 22).toFixed(2)}deg`); m.style.setProperty('--rx', `${(-y * 16).toFixed(2)}deg`); });
+  }, { passive: true });
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('resize', onScroll);
   addEventListener('keydown', e => {
@@ -684,7 +714,7 @@ h2 em{font-style:normal;color:var(--flare)}
       el.addEventListener('pointermove', e => {
         const r = el.getBoundingClientRect();
         const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-        el.style.transform = `perspective(900px) rotateX(${(-y * 7).toFixed(2)}deg) rotateY(${(x * 9).toFixed(2)}deg)`;
+        el.style.transform = `perspective(800px) rotateX(${(-y * 11).toFixed(2)}deg) rotateY(${(x * 14).toFixed(2)}deg) translateZ(14px)`;
         el.style.setProperty('--mx', `${((x + 0.5) * 100).toFixed(1)}%`);
         el.style.setProperty('--my', `${((y + 0.5) * 100).toFixed(1)}%`);
       });
@@ -703,7 +733,7 @@ h2 em{font-style:normal;color:var(--flare)}
 
   const css = getComputedStyle(document.documentElement);
   const token = n => new THREE.Color(css.getPropertyValue(n).trim());
-  const FLARE = token('--flare'), CYAN = token('--cyan'), FG = token('--fg');
+  const GOLD = token('--gold'), GLOW = token('--glow'), BRONZE = token('--bronze'), FG = token('--fg');
 
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.setClearColor(0x000000, 0);
@@ -719,15 +749,36 @@ h2 em{font-style:normal;color:var(--flare)}
   const make = fn => { const a = new Float32Array(N * 3); for (let i = 0; i < N; i++) a.set(fn(i), i * 3); return a; };
   const GA = Math.PI * (3 - Math.sqrt(5));
 
+  const brainAt = (i, n, size) => {
+    const y = 1 - (i / (n - 1)) * 2, r = Math.sqrt(1 - y * y), th = GA * i;
+    const x = Math.cos(th) * r, z = Math.sin(th) * r;
+    const a = Math.atan2(z, x), phi = Math.acos(y);
+    let f = 1 + 0.06 * Math.sin(a * 6 + phi * 5) * Math.sin(phi * 7);
+    if (Math.abs(x) < 0.07) f *= 0.9;
+    const R = size * f;
+    return [x * R * 1.22, y * R * 0.98, z * R * 1.05];
+  };
+  const gauss = (dx, dy, sx, sy) => Math.exp(-(dx * dx) / sx - (dy * dy) / sy);
+  const BN = Math.ceil(N / 4), RINGS = 46;
   const shapes = {
-    brain: make(i => {
-      const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), th = GA * i;
-      const x = Math.cos(th) * r, z = Math.sin(th) * r;
-      const a = Math.atan2(z, x), phi = Math.acos(y);
-      let f = 1 + 0.06 * Math.sin(a * 6 + phi * 5) * Math.sin(phi * 7);
-      if (Math.abs(x) < 0.07) f *= 0.9;
-      const R = 2.05 * f;
-      return [x * R * 1.22, y * R * 0.98, z * R * 1.05];
+    brain: make(i => brainAt(i, N, 2.05)),
+    // Holographic head scanned in horizontal rings; every 4th particle forms the brain inside the skull
+    face: make(i => {
+      if (i % 4 === 0) { const p = brainAt(i / 4, BN, 0.74); return [p[0], p[1] * 0.85 + 0.85, p[2] * 0.9 - 0.15]; }
+      const y = -1 + 2 * ((i % RINGS) + 0.5) / RINGS, a = rand() * TAU, rr = Math.sqrt(1 - y * y);
+      const x = Math.cos(a) * rr, z = Math.sin(a) * rr, f = Math.max(0, z);
+      let d = 1;
+      d += f * 0.46 * gauss(x, y + 0.2, 0.01, 0.05) * (1 + Math.min(1, Math.max(0, -y * 3)));
+      d += f * 0.1 * gauss(x, y + 0.5, 0.05, 0.005);
+      d += f * 0.1 * gauss(x, y + 0.78, 0.04, 0.02);
+      d += f * 0.11 * gauss(x, y - 0.3, 0.12, 0.004);
+      d -= f * 0.07 * (gauss(x - 0.5, y + 0.3, 0.02, 0.03) + gauss(x + 0.5, y + 0.3, 0.02, 0.03));
+      d -= f * 0.24 * (gauss(x - 0.32, y - 0.12, 0.012, 0.008) + gauss(x + 0.32, y - 0.12, 0.012, 0.008));
+      d += 0.1 * (gauss(x - 1, y, 0.01, 0.03) + gauss(x + 1, y, 0.01, 0.03));
+      let sx = 1.5, sz = 1.7;
+      if (y < 0) sx *= 1 - 0.38 * Math.pow(-y, 1.6);
+      if (y < -0.2 && z < 0) sz *= 1 - 0.4 * (-y - 0.2);
+      return [x * sx * d, y * 2.05 * d, z * sz * d];
     }),
     galaxy: make(i => {
       const arm = i % 3, t = Math.pow(rand(), 0.7) * 3.4, a = t * 1.9 + arm * TAU / 3 + (rand() - 0.5) * 0.5;
@@ -780,7 +831,7 @@ h2 em{font-style:normal;color:var(--flare)}
   shapes.text = textShape();
 
   // Fraction of the half-width to push each form right (desktop), and its scale
-  const LOOK = { brain: [0.4, 1], galaxy: [0.45, 1], helix: [0.52, 0.85], torus: [0.5, 0.9], cube: [0.5, 0.95], knot: [0.5, 0.8], spiral: [0.52, 0.9], wave: [0.45, 0.75], text: [0.48, 0.95] };
+  const LOOK = { face: [0.4, 1], brain: [0.42, 0.95], galaxy: [0.45, 1], helix: [0.52, 0.85], torus: [0.5, 0.9], cube: [0.5, 0.95], knot: [0.5, 0.8], spiral: [0.52, 0.9], wave: [0.45, 0.75], text: [0.48, 0.95] };
 
   // Particles
   const pos = new Float32Array(N * 3);
@@ -790,7 +841,7 @@ h2 em{font-style:normal;color:var(--flare)}
   }
   const col = new Float32Array(N * 3);
   for (let i = 0; i < N; i++) {
-    const r = rand(), c = r < 0.5 ? FLARE : r < 0.88 ? CYAN : FG, b = 0.55 + rand() * 0.45;
+    const r = rand(), c = r < 0.55 ? GOLD : r < 0.8 ? GLOW : r < 0.93 ? BRONZE : FG, b = 0.8 + rand() * 0.2;
     col.set([c.r * b, c.g * b, c.b * b], i * 3);
   }
   const speed = new Float32Array(N);
@@ -808,10 +859,10 @@ h2 em{font-style:normal;color:var(--flare)}
   const pAttr = new THREE.BufferAttribute(pos, 3);
   pGeo.setAttribute('position', pAttr);
   pGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  const points = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: small ? 0.07 : 0.06, map: dot, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true }));
+  const points = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: small ? 0.085 : 0.075, map: dot, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true }));
 
-  // Synapse lines between neighbours on the brain form
-  const B = shapes.brain, pairs = [], links = new Uint8Array(N), maxD2 = 0.075;
+  // Mesh lines between neighbours on the head form
+  const B = shapes.face, pairs = [], links = new Uint8Array(N), maxD2 = 0.075;
   for (let i = 0; i < N; i++) {
     if (links[i] >= 2) continue;
     for (let j = i + 1; j < N; j++) {
@@ -824,16 +875,59 @@ h2 em{font-style:normal;color:var(--flare)}
   const lGeo = new THREE.BufferGeometry();
   const lAttr = new THREE.BufferAttribute(lPos, 3);
   lGeo.setAttribute('position', lAttr);
-  const lineMat = new THREE.LineBasicMaterial({ color: CYAN, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+  const lineMat = new THREE.LineBasicMaterial({ color: GLOW, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
   const lines = new THREE.LineSegments(lGeo, lineMat);
 
-  const core = new THREE.LineSegments(
-    new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(0.75, 1)),
-    new THREE.LineBasicMaterial({ color: FLARE, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false })
-  );
+  // AI chip at the centre of the brain, with circuit traces running out of its pins
+  const chipCanvas = document.createElement('canvas');
+  chipCanvas.width = chipCanvas.height = 256;
+  const chipTex = new THREE.CanvasTexture(chipCanvas);
+  function drawChip() {
+    const g = chipCanvas.getContext('2d'), cy = css.getPropertyValue('--glow').trim();
+    g.fillStyle = css.getPropertyValue('--surface-solid').trim(); g.fillRect(0, 0, 256, 256);
+    g.strokeStyle = cy; g.lineWidth = 6; g.strokeRect(12, 12, 232, 232);
+    g.lineWidth = 2; g.globalAlpha = 0.45;
+    for (let k = 44; k < 220; k += 22) { g.beginPath(); g.moveTo(28, k); g.lineTo(62, k); g.moveTo(194, k); g.lineTo(228, k); g.stroke(); }
+    g.globalAlpha = 1;
+    g.fillStyle = css.getPropertyValue('--fg').trim(); g.shadowColor = cy; g.shadowBlur = 26;
+    g.font = '800 96px Unbounded, "Arial Black", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText('AI', 128, 136); g.shadowBlur = 0;
+    chipTex.needsUpdate = true;
+  }
+  drawChip();
+  const chip = new THREE.Group();
+  const chipSide = new THREE.MeshStandardMaterial({ color: token('--depth'), metalness: 0.7, roughness: 0.3 });
+  chip.add(new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.62, 0.08), [chipSide, chipSide, chipSide, chipSide, new THREE.MeshBasicMaterial({ map: chipTex }), chipSide]));
+  const pinMat = new THREE.MeshBasicMaterial({ color: GLOW });
+  const pinGeo = new THREE.BoxGeometry(0.035, 0.09, 0.03);
+  const tr = [], ends = [];
+  for (let s = 0; s < 4; s++) for (let k = 0; k < 6; k++) {
+    const o = -0.25 + k * 0.1, ang = s * Math.PI / 2, c = Math.cos(ang), sn = Math.sin(ang);
+    const pin = new THREE.Mesh(pinGeo, pinMat);
+    pin.position.set(c * 0.35 - sn * o, sn * 0.35 + c * o, 0); pin.rotation.z = ang + Math.PI / 2;
+    chip.add(pin);
+    const l1 = 0.12 + rand() * 0.25, l2 = (rand() - 0.5) * 0.6;
+    const p0 = [c * 0.4 - sn * o, sn * 0.4 + c * o], p1 = [p0[0] + c * l1, p0[1] + sn * l1], p2 = [p1[0] - sn * l2, p1[1] + c * l2];
+    tr.push(p0[0], p0[1], 0, p1[0], p1[1], 0, p1[0], p1[1], 0, p2[0], p2[1], 0);
+    ends.push(p2[0], p2[1], 0);
+  }
+  const trGeo = new THREE.BufferGeometry(); trGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(tr), 3));
+  const trMat = new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
+  chip.add(new THREE.LineSegments(trGeo, trMat));
+  const endGeo = new THREE.BufferGeometry(); endGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(ends), 3));
+  chip.add(new THREE.Points(endGeo, new THREE.PointsMaterial({ size: 0.09, map: dot, color: GLOW, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })));
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: GOLD, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false }));
+  glow.scale.setScalar(2.4); glow.position.z = -0.06;
+  chip.add(glow);
+  chip.position.set(0, 0.85, 0.2);
+  // Glowing eyes
+  const eyeMat = new THREE.SpriteMaterial({ map: dot, color: GLOW, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
+  const eyes = new THREE.Group();
+  [-1, 1].forEach(sx => { const e = new THREE.Sprite(eyeMat); e.scale.setScalar(0.5); e.position.set(sx * 0.4, 0.21, 1.3); eyes.add(e); });
+  const core = chip;
 
   const group = new THREE.Group();
-  group.add(points, lines, core);
+  group.add(points, lines, core, eyes);
   scene.add(group);
 
   // Distant stars
@@ -847,16 +941,41 @@ h2 em{font-style:normal;color:var(--flare)}
   const stars = new THREE.Points(sGeo, new THREE.PointsMaterial({ size: 0.12, color: FG, map: dot, transparent: true, opacity: 0.5, depthWrite: false, sizeAttenuation: true }));
   scene.add(stars);
 
-  let shape = 'brain', tgt = shapes.brain, lineTarget = 0.28, coreTarget = 1, coreScale = 0.001;
+  // Lit low-poly solids orbiting the form, plus two gyroscope rings
+  scene.add(new THREE.AmbientLight(0x6070a0, 0.5));
+  const l1 = new THREE.PointLight(GLOW, 2.4, 40); l1.position.set(6, 4, 6); scene.add(l1);
+  const l2 = new THREE.PointLight(GOLD, 2.4, 40); l2.position.set(-6, -3, 4); scene.add(l2);
+  const solidMat = new THREE.MeshStandardMaterial({ color: GOLD, metalness: 0.85, roughness: 0.22, flatShading: true });
+  const edgeMat = new THREE.LineBasicMaterial({ color: GLOW, transparent: true, opacity: 0.55 });
+  const geos = [new THREE.IcosahedronGeometry(0.42, 0), new THREE.TorusGeometry(0.3, 0.11, 10, 28), new THREE.OctahedronGeometry(0.38, 0), new THREE.DodecahedronGeometry(0.36, 0), new THREE.TetrahedronGeometry(0.42, 0)];
+  const floaters = geos.slice(0, small ? 3 : 5).map((g, i) => {
+    const m = new THREE.Mesh(g, solidMat);
+    if (!(g instanceof THREE.TorusGeometry || g instanceof THREE.TorusKnotGeometry)) m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g), edgeMat));
+    m.userData = { a: i / 5 * TAU, r: 4.4 + (i % 2) * 1.1, y: (i % 3 - 1) * 2.1, s: 0.6 + rand() * 0.6 };
+    scene.add(m);
+    return m;
+  });
+  const orbit = new THREE.Group();
+  const ringA = new THREE.Mesh(new THREE.TorusGeometry(3.1, 0.009, 6, 180), new THREE.MeshBasicMaterial({ color: GLOW, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const ringB = new THREE.Mesh(new THREE.TorusGeometry(3.45, 0.007, 6, 180), new THREE.MeshBasicMaterial({ color: GOLD, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false }));
+  ringA.rotation.x = 1.25; ringB.rotation.set(0.5, 0.9, 0);
+  orbit.add(ringA, ringB);
+  scene.add(orbit);
+
+  // Chip sits in the skull on the face, then fills the centre of the brain once we dive in
+  const CHIP = { face: [0, 0.85, 0.2, 1], brain: [0, 0, 0.4, 2.1] };
+  let shape = 'face', tgt = shapes.face, lineTarget = 0.22, coreTarget = 1, coreScale = 0.001, chipAt = CHIP.face, eyeTarget = 1, eyeScale = 0.001;
   listeners.push(sec => {
-    shape = sec.dataset.shape in shapes ? sec.dataset.shape : 'brain';
+    shape = sec.dataset.shape in shapes ? sec.dataset.shape : 'face';
     tgt = shapes[shape];
-    lineTarget = shape === 'brain' ? 0.28 : 0.035;
-    coreTarget = shape === 'brain' ? 1 : 0.001;
+    lineTarget = shape === 'face' ? 0.22 : 0.035;
+    chipAt = CHIP[shape] || chipAt;
+    coreTarget = CHIP[shape] ? CHIP[shape][3] : 0.001;
+    eyeTarget = shape === 'face' ? 1 : 0.001;
   });
   if (document.fonts && document.fonts.load) {
     document.fonts.load('800 100px Unbounded').then(() => {
-      shapes.text = textShape();
+      shapes.text = textShape(); drawChip();
       if (shape === 'text') tgt = shapes.text;
     }).catch(() => {});
   }
@@ -873,11 +992,14 @@ h2 em{font-style:normal;color:var(--flare)}
   resize();
   addEventListener('resize', resize);
 
-  const halfW = () => Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z * camera.aspect;
+  const halfW = () => Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * 8 * camera.aspect;
   let lastY = scrollY, spin = 0, gs = 1;
+  const born = performance.now();
   group.position.x = innerWidth < 900 ? 0 : LOOK.brain[0] * halfW();
 
+  let narrowNow = innerWidth < 900;
   function frame(now) {
+    narrowNow = innerWidth < 900;
     requestAnimationFrame(frame);
     if (reduce) pos.set(tgt);
     else for (let i = 0; i < N; i++) {
@@ -892,7 +1014,7 @@ h2 em{font-style:normal;color:var(--flare)}
       lPos[q] = pos[a]; lPos[q + 1] = pos[a + 1]; lPos[q + 2] = pos[a + 2];
     }
     lAttr.needsUpdate = true;
-    lineMat.opacity += (lineTarget - lineMat.opacity) * 0.05;
+    lineMat.opacity += ((now - born > 1800 ? lineTarget : 0) - lineMat.opacity) * 0.02;
 
     const narrow = innerWidth < 900, look = LOOK[shape];
     const tx = narrow ? 0 : look[0] * halfW(), ts = look[1] * (narrow ? 0.8 : 1);
@@ -901,20 +1023,39 @@ h2 em{font-style:normal;color:var(--flare)}
     group.scale.setScalar(gs);
     coreScale += (coreTarget - coreScale) * 0.06;
     core.scale.setScalar(coreScale);
+    core.position.x += (chipAt[0] - core.position.x) * 0.06;
+    core.position.y += (chipAt[1] - core.position.y) * 0.06;
+    core.position.z += (chipAt[2] - core.position.z) * 0.06;
+    eyeScale += (eyeTarget - eyeScale) * 0.08;
+    eyes.scale.setScalar(eyeScale);
+    orbit.position.copy(group.position);
+    orbit.scale.setScalar(gs);
+    const t = reduce ? 0 : now * 0.001;
+    floaters.forEach((m, i) => {
+      const d = m.userData, a = d.a + t * 0.12 * d.s;
+      m.visible = !narrowNow;
+      m.position.set(group.position.x + Math.cos(a) * d.r * 0.6 * gs, d.y + Math.sin(t * 0.8 + i) * 0.3, Math.sin(a) * d.r * 0.5 - 2.6);
+      if (!reduce) { m.rotation.x += 0.004 * (1 + d.s); m.rotation.y += 0.006; }
+    });
+    if (!reduce) { ringA.rotation.z += 0.003; ringB.rotation.x += 0.002; }
 
     if (!reduce) {
       const vy = scrollY - lastY; lastY = scrollY;
       spin += (Math.min(Math.abs(vy), 80) * 0.0005 - spin) * 0.08;
-      if (shape === 'text') {
+      if (shape === 'text' || shape === 'face') {
         const base = Math.round(group.rotation.y / TAU) * TAU;
-        group.rotation.y += (base + Math.sin(now * 0.0006) * 0.35 - group.rotation.y) * 0.05;
+        const sway = shape === "face" ? -0.5 + Math.sin(now * 0.0005) * 0.22 : Math.sin(now * 0.0006) * 0.35;
+        group.rotation.y += (base + sway - group.rotation.y) * 0.05;
       } else group.rotation.y += 0.0022 + spin;
       group.rotation.x += (my * 0.3 - group.rotation.x) * 0.05;
-      core.rotation.x += 0.004; core.rotation.y -= 0.003;
+      glow.material.opacity = 0.4 + Math.sin(t * 2.4) * 0.2; trMat.opacity = 0.55 + Math.sin(t * 3.1) * 0.35;
       stars.rotation.y += 0.0003;
-      camera.position.x += (mx * 0.5 - camera.position.x) * 0.04;
+      // Dive into the head as the first slide scrolls away
+      const dig = Math.min(1, Math.max(0, scrollY / innerHeight)), aim = Math.sin(Math.PI * dig);
+      camera.position.z += (8 - 4.4 * aim - camera.position.z) * 0.08;
+      camera.position.x += (mx * 0.5 + group.position.x * aim * 0.85 - camera.position.x) * 0.06;
       camera.position.y += (-my * 0.35 - camera.position.y) * 0.04;
-      camera.lookAt(0, 0, 0);
+      camera.lookAt(group.position.x * aim, 0.5 * aim, 0);
     }
     renderer.render(scene, camera);
   }
