@@ -7,29 +7,29 @@
 <style>
 /* Layout: full-screen deck slides scrolling over one fixed WebGL particle "mind" that re-forms per slide; copy sits left, the 3D form sits right. */
 :root{
-  --ink:#050505;
-  --surface:rgba(22,18,10,.62);
-  --surface-solid:#110f0a;
-  --line:rgba(245,197,66,.18);
-  --line-strong:rgba(245,197,66,.42);
-  --fg:#f7f3e8;
-  --muted:#bdb4a0;
-  --gold:#f5c542;
-  --gold-deep:#5c4510;
-  --on-accent:#140f02;
-  --gold-soft:rgba(245,197,66,.2);
-  --glow:#ffe9a8;
-  --glow-soft:rgba(255,233,168,.12);
-  --bronze:#b8862b;
-  --bronze-soft:rgba(184,134,43,.18);
-  --depth:#3d2e0d;
-  --depth-2:#1c1506;
-  --grad:linear-gradient(100deg,#fff1c1 0%,#f5c542 45%,#c08a24 100%);
-  --chrome:linear-gradient(100deg,#fff8e1 0%,#f5d77a 28%,#a9781f 52%,#ffe39a 74%,#fff8e1 100%);
-  --veil-strong:rgba(5,5,5,.9);
-  --veil-mid:rgba(5,5,5,.5);
-  --veil-none:rgba(5,5,5,0);
-  --veil-mobile:rgba(5,5,5,.72);
+  --ink:#040620;
+  --surface:rgba(12,18,64,.6);
+  --surface-solid:#0b1142;
+  --line:rgba(120,160,255,.24);
+  --line-strong:rgba(120,170,255,.5);
+  --fg:#f5f7ff;
+  --muted:#b3bfe6;
+  --volt:#ff2bd6;
+  --volt-deep:#5a1050;
+  --on-accent:#060816;
+  --volt-soft:rgba(255,43,214,.3);
+  --cyan:#00e5ff;
+  --cyan-soft:rgba(0,229,255,.26);
+  --blue:#2f6bff;
+  --blue-soft:rgba(47,107,255,.35);
+  --depth:#1d2a80;
+  --depth-2:#0c1350;
+  --grad:linear-gradient(100deg,#00e5ff 0%,#2f6bff 48%,#ff2bd6 100%);
+  --chrome:linear-gradient(100deg,#f4f7ff 0%,#9feaff 30%,#ffa3ea 62%,#f4f7ff 100%);
+  --veil-strong:rgba(4,6,32,.88);
+  --veil-mid:rgba(4,6,32,.45);
+  --veil-none:rgba(4,6,32,0);
+  --veil-mobile:rgba(4,6,32,.7);
 
   --display:"Unbounded","Arial Black",system-ui,sans-serif;
   --body:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
@@ -49,13 +49,13 @@ html{scroll-behavior:smooth}
 body{
   margin:0;
   background:var(--ink);
-  background-image:radial-gradient(55vw 55vw at 88% 12%,var(--gold-soft),transparent 70%),radial-gradient(60vw 60vw at 10% 100%,var(--bronze-soft),transparent 70%),radial-gradient(45vw 45vw at 65% 80%,var(--glow-soft),transparent 70%);
+  background-image:radial-gradient(55vw 55vw at 88% 12%,var(--volt-soft),transparent 70%),radial-gradient(60vw 60vw at 10% 100%,var(--blue-soft),transparent 70%),radial-gradient(45vw 45vw at 65% 80%,var(--cyan-soft),transparent 70%);
   background-attachment:fixed;
   color:var(--fg);font-family:var(--body);font-size:var(--step-0);line-height:1.6;
   -webkit-font-smoothing:antialiased;overflow-x:clip;
 }
 a{color:inherit}
-a:focus-visible,button:focus-visible{outline:2px solid var(--glow);outline-offset:3px;border-radius:6px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
 h1,h2,h3,p{margin:0}
 
 #stage{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
@@ -64,35 +64,35 @@ main{position:relative;z-index:2}
 
 /* top bar */
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--ink)}
-.progress{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:2px;z-index:30;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--gold),var(--glow))}
+.progress{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:2px;z-index:30;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--volt),var(--cyan))}
 .top{position:fixed;inset:0 0 auto;z-index:20;padding-top:env(safe-area-inset-top,0px);background:linear-gradient(180deg,var(--veil-strong),var(--veil-none))}
 .top-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase}
-.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;border:1.5px solid var(--glow);color:var(--fg);font-size:.78rem;letter-spacing:0;box-shadow:0 0 18px var(--glow-soft),inset 0 0 12px var(--gold-soft);transform:perspective(200px) rotateY(-14deg)}
+.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;border:1.5px solid var(--cyan);color:var(--fg);font-size:.78rem;letter-spacing:0;box-shadow:0 0 18px var(--cyan-soft),inset 0 0 12px var(--volt-soft);transform:perspective(200px) rotateY(-14deg)}
 .top-right{display:flex;align-items:center;gap:18px}
 .counter{font-family:var(--mono);font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.08em}
 
 .btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:999px;font-family:var(--body);font-weight:700;font-size:.95rem;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .2s ease,background-color .2s ease,border-color .2s ease}
-.btn-primary{background:var(--grad);color:var(--on-accent);box-shadow:0 12px 30px -12px var(--gold),0 4px 0 var(--depth)}
+.btn-primary{background:var(--grad);color:var(--on-accent);box-shadow:0 12px 30px -12px var(--volt),0 4px 0 var(--depth)}
 .btn-primary:hover{transform:translateY(-3px)}
 .btn-ghost{border-color:var(--line-strong);color:var(--fg);background:var(--surface)}
-.btn-ghost:hover{border-color:var(--glow)}
+.btn-ghost:hover{border-color:var(--cyan)}
 .btn-sm{padding:9px 16px;font-size:.85rem}
 .btn svg{width:16px;height:16px}
 
 .dots{position:fixed;top:50%;right:calc(env(safe-area-inset-right,0px) + 26px);transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:12px}
 .dots button{width:8px;height:8px;padding:0;border:0;border-radius:99px;background:var(--line-strong);cursor:pointer;transition:height .3s ease,background-color .3s ease}
-.dots button[aria-current="true"]{height:28px;background:var(--gold)}
+.dots button[aria-current="true"]{height:28px;background:var(--volt)}
 
 /* slides */
 .slide{position:relative;min-height:100svh;display:flex;align-items:center;padding-block:116px 84px}
 .wrap{width:100%;max-width:1280px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .col{max-width:660px}
-.eyebrow{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--glow)}
-.eyebrow .num{color:var(--gold)}
+.eyebrow{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan)}
+.eyebrow .num{color:var(--volt)}
 .eyebrow::after{content:"";width:48px;height:1px;background:var(--line-strong)}
 h2{margin-top:18px;font-family:var(--display);font-weight:700;font-size:var(--step-4);line-height:1.06;letter-spacing:-.02em;text-wrap:balance}
-h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px var(--gold-soft))}
+h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px var(--volt-soft))}
 .lead{margin-top:18px;font-size:var(--step-1);color:var(--muted);max-width:60ch}
 .lead b{color:var(--fg);font-weight:600}
 
@@ -100,11 +100,11 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
 #start{padding-bottom:140px}
 .wordmark{margin-top:22px;font-family:var(--display);font-weight:800;font-size:var(--step-5);line-height:.88;letter-spacing:-.045em;display:flex;flex-wrap:wrap;gap:0 .22em}
 .wordmark > span{display:inline-block;transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s ease-out}
-.wordmark .five{background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(1px 1px 0 var(--gold-deep)) drop-shadow(2px 2px 0 var(--gold-deep)) drop-shadow(2px 2px 0 var(--depth)) drop-shadow(3px 3px 0 var(--depth-2)) drop-shadow(0 0 36px var(--gold-soft))}
-.wordmark .five i{font-style:normal}
-.wordmark .minds{color:var(--fg);text-shadow:1px 1px 0 var(--depth),2px 2px 0 var(--depth),3px 3px 0 var(--depth),4px 4px 0 var(--depth),5px 5px 0 var(--depth-2),6px 6px 0 var(--depth-2),7px 7px 0 var(--depth-2),8px 8px 0 var(--depth-2),14px 20px 34px var(--veil-strong)}
+.wordmark .five{color:var(--fg);text-shadow:1px 1px 0 var(--depth),2px 2px 0 var(--depth),3px 3px 0 var(--depth),4px 4px 0 var(--depth),5px 5px 0 var(--depth-2),6px 6px 0 var(--depth-2),7px 7px 0 var(--depth-2),8px 8px 0 var(--depth-2),14px 20px 34px var(--veil-strong)}
+.wordmark .five i{font-style:normal;color:var(--volt);text-shadow:1px 1px 0 var(--volt-deep),2px 2px 0 var(--volt-deep),3px 3px 0 var(--volt-deep),4px 4px 0 var(--volt-deep),5px 5px 0 var(--depth-2),6px 6px 0 var(--depth-2),7px 7px 0 var(--depth-2),8px 8px 0 var(--depth-2),0 0 40px var(--volt-soft)}
+.wordmark .minds{background:var(--chrome);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(3px 3px 0 var(--depth)) drop-shadow(3px 3px 0 var(--depth-2)) drop-shadow(0 0 26px var(--cyan-soft))}
 .hero-line{margin-top:26px;font-family:var(--body);font-weight:600;font-size:var(--step-3);line-height:1.18;max-width:21ch;text-wrap:balance}
-.hero-line span{color:var(--glow)}
+.hero-line span{color:var(--cyan)}
 .hero .lead{max-width:54ch}
 .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
 .facts{margin-top:40px;max-width:740px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
@@ -117,25 +117,25 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
 .ticker{position:absolute;left:0;right:0;bottom:0;overflow:hidden;border-top:1px solid var(--line);background:var(--veil-mid);padding-block:14px;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
 .ticker-track{display:flex;width:max-content;animation:tick 60s linear infinite}
 .ticker-track span{padding-right:22px;white-space:nowrap}
-.ticker-track span::after{content:"/";color:var(--gold);padding-left:22px}
+.ticker-track span::after{content:"/";color:var(--volt);padding-left:22px}
 @keyframes tick{to{transform:translateX(-50%)}}
 
 /* generic panels */
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .tilt{position:relative;transition:transform .25s ease,border-color .3s ease;transform-style:preserve-3d;will-change:transform}
-.tilt::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s ease;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),var(--gold-soft),transparent 70%)}
+.tilt::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s ease;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),var(--volt-soft),transparent 70%)}
 .tilt:hover{border-color:var(--line-strong)}
 .tilt:hover::before{opacity:1}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-family:var(--mono);font-size:.7rem;line-height:1.4;padding:3px 9px;border-radius:999px;border:1px solid var(--line-strong);color:var(--glow);white-space:nowrap}
-.label{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.chip{font-family:var(--mono);font-size:.7rem;line-height:1.4;padding:3px 9px;border-radius:999px;border:1px solid var(--line-strong);color:var(--cyan);white-space:nowrap}
+.label{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--volt)}
 
 /* gap */
 .gap-grid{margin-top:44px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;max-width:1040px}
 .gap-item{padding:24px;display:flex;flex-direction:column;gap:12px}
 .gap-item h3{font-family:var(--display);font-weight:500;font-size:var(--step-1);line-height:1.3}
 .gap-item p{color:var(--muted);font-size:.94rem}
-.pitch{margin-top:28px;max-width:62ch;font-size:var(--step-1);border-left:2px solid var(--gold);padding-left:18px}
+.pitch{margin-top:28px;max-width:62ch;font-size:var(--step-1);border-left:2px solid var(--volt);padding-left:18px}
 
 /* learn */
 .topics{margin-top:40px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
@@ -147,11 +147,11 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
 /* roadmap */
 .road{margin-top:44px;padding:30px 26px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;position:relative}
 .wk{position:relative;padding-top:30px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.wk::before{content:"";position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;border:2px solid var(--gold);background:var(--ink);z-index:1}
-.wk::after{content:"";position:absolute;top:5px;left:12px;right:-18px;height:2px;background:linear-gradient(90deg,var(--gold),var(--glow));opacity:.45}
+.wk::before{content:"";position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;border:2px solid var(--volt);background:var(--ink);z-index:1}
+.wk::after{content:"";position:absolute;top:5px;left:12px;right:-18px;height:2px;background:linear-gradient(90deg,var(--volt),var(--cyan));opacity:.45}
 .wk:last-child::after{display:none}
-.wk:last-child::before{background:var(--gold)}
-.wk .w{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;color:var(--gold);text-transform:uppercase}
+.wk:last-child::before{background:var(--volt)}
+.wk .w{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;color:var(--volt);text-transform:uppercase}
 .wk h3{font-family:var(--display);font-weight:500;font-size:.98rem;line-height:1.3}
 .wk p{font-size:.86rem;color:var(--muted);line-height:1.5}
 .road-note{margin-top:18px;color:var(--muted);font-size:.92rem;max-width:70ch}
@@ -160,27 +160,27 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
 /* formats */
 .formats{margin-top:40px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
 .fmt{padding:26px;display:flex;flex-direction:column;gap:14px}
-.fmt.featured{border-color:var(--gold);background:linear-gradient(180deg,var(--gold-soft),var(--surface) 45%)}
+.fmt.featured{border-color:var(--volt);background:linear-gradient(180deg,var(--volt-soft),var(--surface) 45%)}
 .fmt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .fmt h3{font-family:var(--display);font-weight:500;font-size:var(--step-1);line-height:1.25}
-.tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--gold);color:var(--on-accent);white-space:nowrap;font-weight:500}
+.tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--volt);color:var(--on-accent);white-space:nowrap;font-weight:500}
 .dur{font-family:var(--display);font-weight:800;font-size:var(--step-4);line-height:1;letter-spacing:-.03em}
 .dur small{font-family:var(--body);font-size:.9rem;font-weight:600;letter-spacing:0;color:var(--muted);margin-left:6px}
 .fmt ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:.92rem}
 .fmt li{display:flex;gap:10px;align-items:baseline}
-.fmt li::before{content:"";flex:none;width:6px;height:6px;border-radius:2px;background:var(--glow);transform:translateY(-2px)}
+.fmt li::before{content:"";flex:none;width:6px;height:6px;border-radius:2px;background:var(--cyan);transform:translateY(-2px)}
 .best{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
 .best b{color:var(--fg)}
 .when{margin-top:16px;padding:22px 26px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center}
 .days{display:flex;gap:6px}
 .day{width:46px;height:54px;border-radius:9px;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
-.day.on{background:var(--gold);border-color:var(--gold);color:var(--on-accent);font-weight:500}
+.day.on{background:var(--volt);border-color:var(--volt);color:var(--on-accent);font-weight:500}
 .when-text{display:flex;flex-direction:column;gap:12px;min-width:0}
 .when-text p{font-size:.95rem}
-.when-text p b{color:var(--glow);font-weight:600}
+.when-text p b{color:var(--cyan);font-weight:600}
 .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:var(--mono);font-size:.76rem}
 .flow span{padding:5px 11px;border-radius:7px;border:1px solid var(--line-strong)}
-.flow i{font-style:normal;color:var(--gold)}
+.flow i{font-style:normal;color:var(--volt)}
 
 /* toolkit */
 .split{margin-top:40px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px}
@@ -195,7 +195,7 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
 .credit{background:var(--surface-solid);padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
 .credit-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .credit b{font-weight:700;font-size:.95rem}
-.credit em{font-style:normal;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;color:var(--glow);white-space:nowrap}
+.credit em{font-style:normal;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;color:var(--cyan);white-space:nowrap}
 .credit span{font-size:.84rem;color:var(--muted);line-height:1.5}
 .disclaim{font-size:.82rem;color:var(--muted)}
 .oss{margin-top:16px;padding:18px 22px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
@@ -204,7 +204,7 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
 /* career */
 .services{margin-top:40px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .svc{padding:22px;display:flex;flex-direction:column;gap:12px}
-.svc svg{width:30px;height:30px;color:var(--gold)}
+.svc svg{width:30px;height:30px;color:var(--volt)}
 .svc h3{font-family:var(--display);font-weight:500;font-size:1rem}
 .svc p{font-size:.88rem;color:var(--muted)}
 .intern{margin-top:14px;padding:26px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:28px;align-items:center}
@@ -251,7 +251,7 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
   .road{grid-template-columns:minmax(0,1fr);padding:24px 20px 24px 22px;row-gap:22px}
   .wk{padding:0 0 0 28px}
   .wk::before{top:4px}
-  .wk::after,.wk:nth-child(3n)::after{display:block;top:18px;left:5px;right:auto;bottom:-22px;width:2px;height:auto;background:linear-gradient(180deg,var(--gold),var(--glow))}
+  .wk::after,.wk:nth-child(3n)::after{display:block;top:18px;left:5px;right:auto;bottom:-22px;width:2px;height:auto;background:linear-gradient(180deg,var(--volt),var(--cyan))}
   .wk:last-child::after{display:none}
   .counter{display:none}
   .day{width:auto;flex:1;height:50px}
@@ -726,7 +726,7 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
 
   const css = getComputedStyle(document.documentElement);
   const token = n => new THREE.Color(css.getPropertyValue(n).trim());
-  const GOLD = token('--gold'), GLOW = token('--glow'), BRONZE = token('--bronze'), FG = token('--fg');
+  const VOLT = token('--volt'), CYAN = token('--cyan'), BLUE = token('--blue'), FG = token('--fg');
 
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.setClearColor(0x000000, 0);
@@ -834,7 +834,7 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
   }
   const col = new Float32Array(N * 3);
   for (let i = 0; i < N; i++) {
-    const r = rand(), c = r < 0.55 ? GOLD : r < 0.8 ? GLOW : r < 0.93 ? BRONZE : FG, b = 0.8 + rand() * 0.2;
+    const r = rand(), c = r < 0.38 ? VOLT : r < 0.72 ? CYAN : r < 0.9 ? BLUE : FG, b = 0.8 + rand() * 0.2;
     col.set([c.r * b, c.g * b, c.b * b], i * 3);
   }
   const speed = new Float32Array(N);
@@ -868,7 +868,7 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
   const lGeo = new THREE.BufferGeometry();
   const lAttr = new THREE.BufferAttribute(lPos, 3);
   lGeo.setAttribute('position', lAttr);
-  const lineMat = new THREE.LineBasicMaterial({ color: GLOW, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+  const lineMat = new THREE.LineBasicMaterial({ color: CYAN, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
   const lines = new THREE.LineSegments(lGeo, lineMat);
 
   // AI chip at the centre of the brain, with circuit traces running out of its pins
@@ -876,7 +876,7 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
   chipCanvas.width = chipCanvas.height = 256;
   const chipTex = new THREE.CanvasTexture(chipCanvas);
   function drawChip() {
-    const g = chipCanvas.getContext('2d'), cy = css.getPropertyValue('--glow').trim();
+    const g = chipCanvas.getContext('2d'), cy = css.getPropertyValue('--cyan').trim();
     g.fillStyle = css.getPropertyValue('--surface-solid').trim(); g.fillRect(0, 0, 256, 256);
     g.strokeStyle = cy; g.lineWidth = 6; g.strokeRect(12, 12, 232, 232);
     g.lineWidth = 2; g.globalAlpha = 0.45;
@@ -891,7 +891,7 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
   const chip = new THREE.Group();
   const chipSide = new THREE.MeshStandardMaterial({ color: token('--depth'), metalness: 0.7, roughness: 0.3 });
   chip.add(new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.62, 0.08), [chipSide, chipSide, chipSide, chipSide, new THREE.MeshBasicMaterial({ map: chipTex }), chipSide]));
-  const pinMat = new THREE.MeshBasicMaterial({ color: GLOW });
+  const pinMat = new THREE.MeshBasicMaterial({ color: CYAN });
   const pinGeo = new THREE.BoxGeometry(0.035, 0.09, 0.03);
   const tr = [], ends = [];
   for (let s = 0; s < 4; s++) for (let k = 0; k < 6; k++) {
@@ -905,16 +905,16 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
     ends.push(p2[0], p2[1], 0);
   }
   const trGeo = new THREE.BufferGeometry(); trGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(tr), 3));
-  const trMat = new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
+  const trMat = new THREE.LineBasicMaterial({ color: VOLT, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false });
   chip.add(new THREE.LineSegments(trGeo, trMat));
   const endGeo = new THREE.BufferGeometry(); endGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(ends), 3));
-  chip.add(new THREE.Points(endGeo, new THREE.PointsMaterial({ size: 0.09, map: dot, color: GLOW, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })));
-  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: GOLD, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false }));
+  chip.add(new THREE.Points(endGeo, new THREE.PointsMaterial({ size: 0.09, map: dot, color: CYAN, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })));
+  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: VOLT, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false }));
   glow.scale.setScalar(2.4); glow.position.z = -0.06;
   chip.add(glow);
   chip.position.set(0, 0.85, 0.2);
   // Glowing eyes
-  const eyeMat = new THREE.SpriteMaterial({ map: dot, color: GLOW, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
+  const eyeMat = new THREE.SpriteMaterial({ map: dot, color: CYAN, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
   const eyes = new THREE.Group();
   [-1, 1].forEach(sx => { const e = new THREE.Sprite(eyeMat); e.scale.setScalar(0.5); e.position.set(sx * 0.4, 0.21, 1.3); eyes.add(e); });
   const core = chip;
@@ -936,10 +936,10 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
 
   // Lit low-poly solids orbiting the form, plus two gyroscope rings
   scene.add(new THREE.AmbientLight(0x6070a0, 0.5));
-  const l1 = new THREE.PointLight(GLOW, 2.4, 40); l1.position.set(6, 4, 6); scene.add(l1);
-  const l2 = new THREE.PointLight(GOLD, 2.4, 40); l2.position.set(-6, -3, 4); scene.add(l2);
-  const solidMat = new THREE.MeshStandardMaterial({ color: GOLD, metalness: 0.85, roughness: 0.22, flatShading: true });
-  const edgeMat = new THREE.LineBasicMaterial({ color: GLOW, transparent: true, opacity: 0.55 });
+  const l1 = new THREE.PointLight(CYAN, 2.4, 40); l1.position.set(6, 4, 6); scene.add(l1);
+  const l2 = new THREE.PointLight(VOLT, 2.4, 40); l2.position.set(-6, -3, 4); scene.add(l2);
+  const solidMat = new THREE.MeshStandardMaterial({ color: FG, metalness: 0.55, roughness: 0.28, flatShading: true });
+  const edgeMat = new THREE.LineBasicMaterial({ color: CYAN, transparent: true, opacity: 0.55 });
   const geos = [new THREE.IcosahedronGeometry(0.42, 0), new THREE.TorusGeometry(0.3, 0.11, 10, 28), new THREE.OctahedronGeometry(0.38, 0), new THREE.DodecahedronGeometry(0.36, 0), new THREE.TetrahedronGeometry(0.42, 0)];
   const floaters = geos.slice(0, small ? 3 : 5).map((g, i) => {
     const m = new THREE.Mesh(g, solidMat);
@@ -949,8 +949,8 @@ h2 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;back
     return m;
   });
   const orbit = new THREE.Group();
-  const ringA = new THREE.Mesh(new THREE.TorusGeometry(3.1, 0.009, 6, 180), new THREE.MeshBasicMaterial({ color: GLOW, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false }));
-  const ringB = new THREE.Mesh(new THREE.TorusGeometry(3.45, 0.007, 6, 180), new THREE.MeshBasicMaterial({ color: GOLD, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const ringA = new THREE.Mesh(new THREE.TorusGeometry(3.1, 0.009, 6, 180), new THREE.MeshBasicMaterial({ color: CYAN, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending, depthWrite: false }));
+  const ringB = new THREE.Mesh(new THREE.TorusGeometry(3.45, 0.007, 6, 180), new THREE.MeshBasicMaterial({ color: VOLT, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false }));
   ringA.rotation.x = 1.25; ringB.rotation.set(0.5, 0.9, 0);
   orbit.add(ringA, ringB);
   scene.add(orbit);
