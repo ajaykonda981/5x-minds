@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>5X Minds</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="5X Minds: hands-on AI programs for college students. Python, LLMs, RAG, LangChain, LangGraph, Hugging Face, open-source and frontier models, fine-tuning and image models.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Unbounded:wght@500;700;800&display=swap">
+<style>
+/* Layout: full-screen deck slides scrolling over one fixed WebGL particle "mind" that re-forms per slide; copy sits left, the 3D form sits right. */
+:root{
+  --ink:#050a14;
+  --surface:rgba(11,20,38,.68);
+  --surface-solid:#0b1426;
+  --line:rgba(150,180,225,.16);
+  --line-strong:rgba(150,180,225,.32);
+  --fg:#eaf0f7;
+  --muted:#97a7bd;
+  --flare:#ff6b3d;
+  --flare-ink:#1c0900;
+  --flare-soft:rgba(255,107,61,.16);
+  --cyan:#5fe3e8;
+  --cyan-soft:rgba(95,227,232,.12);
+  --veil-strong:rgba(5,10,20,.92);
+  --veil-mid:rgba(5,10,20,.6);
+  --veil-none:rgba(5,10,20,0);
+  --veil-mobile:rgba(5,10,20,.74);
+
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Manrope","Segoe UI",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+
+  --step-0:1rem;
+  --step-1:clamp(1.05rem,1rem + .3vw,1.2rem);
+  --step-2:clamp(1.2rem,1.05rem + .6vw,1.45rem);
+  --step-3:clamp(1.45rem,1.15rem + 1.3vw,2.2rem);
+  --step-4:clamp(1.9rem,1.25rem + 2.8vw,3.4rem);
+  --step-5:clamp(3.1rem,1.4rem + 7.4vw,7.6rem);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--ink);
+  background-image:radial-gradient(60vw 60vw at 85% 20%,var(--flare-soft),transparent 70%),radial-gradient(50vw 50vw at 70% 90%,var(--cyan-soft),transparent 70%);
+  background-attachment:fixed;
+  color:var(--fg);font-family:var(--body);font-size:var(--step-0);line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:clip;
+}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px;border-radius:6px}
+h1,h2,h3,p{margin:0}
+
+#stage{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+.veil{position:fixed;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,var(--veil-strong) 0%,var(--veil-mid) 44%,var(--veil-none) 70%)}
+main{position:relative;z-index:2}
+
+/* top bar */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--ink)}
+.progress{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:2px;z-index:30;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--flare),var(--cyan))}
+.top{position:fixed;inset:0 0 auto;z-index:20;padding-top:env(safe-area-inset-top,0px);background:linear-gradient(180deg,var(--veil-strong),var(--veil-none))}
+.top-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:700;font-size:.95rem;letter-spacing:.06em;text-transform:uppercase}
+.mark{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;border:1.5px solid var(--flare);color:var(--flare);font-size:.78rem;letter-spacing:0}
+.top-right{display:flex;align-items:center;gap:18px}
+.counter{font-family:var(--mono);font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.08em}
+
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:999px;font-family:var(--body);font-weight:700;font-size:.95rem;text-decoration:none;border:1px solid transparent;cursor:pointer;transition:transform .2s ease,background-color .2s ease,border-color .2s ease}
+.btn-primary{background:var(--flare);color:var(--flare-ink)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{border-color:var(--line-strong);color:var(--fg);background:var(--surface)}
+.btn-ghost:hover{border-color:var(--cyan)}
+.btn-sm{padding:9px 16px;font-size:.85rem}
+.btn svg{width:16px;height:16px}
+
+.dots{position:fixed;top:50%;right:calc(env(safe-area-inset-right,0px) + 26px);transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:12px}
+.dots button{width:8px;height:8px;padding:0;border:0;border-radius:99px;background:var(--line-strong);cursor:pointer;transition:height .3s ease,background-color .3s ease}
+.dots button[aria-current="true"]{height:28px;background:var(--flare)}
+
+/* slides */
+.slide{position:relative;min-height:100svh;display:flex;align-items:center;padding-block:116px 84px}
+.wrap{width:100%;max-width:1280px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.col{max-width:660px}
+.eyebrow{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan)}
+.eyebrow .num{color:var(--flare)}
+.eyebrow::after{content:"";width:48px;height:1px;background:var(--line-strong)}
+h2{margin-top:18px;font-family:var(--display);font-weight:700;font-size:var(--step-4);line-height:1.06;letter-spacing:-.02em;text-wrap:balance}
+h2 em{font-style:normal;color:var(--flare)}
+.lead{margin-top:18px;font-size:var(--step-1);color:var(--muted);max-width:60ch}
+.lead b{color:var(--fg);font-weight:600}
+
+/* hero */
+#start{padding-bottom:140px}
+.wordmark{margin-top:22px;font-family:var(--display);font-weight:800;font-size:var(--step-5);line-height:.88;letter-spacing:-.045em;display:flex;flex-wrap:wrap;gap:0 .22em}
+.wordmark .five{color:var(--fg)}
+.wordmark .five i{font-style:normal;color:var(--flare)}
+.wordmark .minds{color:transparent;-webkit-text-stroke:1.5px var(--fg)}
+.hero-line{margin-top:26px;font-family:var(--body);font-weight:600;font-size:var(--step-3);line-height:1.18;max-width:21ch;text-wrap:balance}
+.hero-line span{color:var(--cyan)}
+.hero .lead{max-width:54ch}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.facts{margin-top:40px;max-width:740px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.fact{background:var(--surface-solid);padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.fact b{font-family:var(--display);font-weight:500;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.fact span{font-size:.8rem;color:var(--muted)}
+.rise{animation:rise .9s cubic-bezier(.2,.7,.2,1) both;animation-delay:calc(var(--d,0) * 110ms + 150ms)}
+@keyframes rise{from{opacity:.15;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+.ticker{position:absolute;left:0;right:0;bottom:0;overflow:hidden;border-top:1px solid var(--line);background:var(--veil-mid);padding-block:14px;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.ticker-track{display:flex;width:max-content;animation:tick 60s linear infinite}
+.ticker-track span{padding-right:22px;white-space:nowrap}
+.ticker-track span::after{content:"/";color:var(--flare);padding-left:22px}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* generic panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.tilt{position:relative;transition:transform .25s ease,border-color .3s ease;transform-style:preserve-3d;will-change:transform}
+.tilt::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s ease;background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),var(--flare-soft),transparent 70%)}
+.tilt:hover{border-color:var(--line-strong)}
+.tilt:hover::before{opacity:1}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--mono);font-size:.7rem;line-height:1.4;padding:3px 9px;border-radius:999px;border:1px solid var(--line-strong);color:var(--cyan);white-space:nowrap}
+.label{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--flare)}
+
+/* gap */
+.gap-grid{margin-top:44px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;max-width:1040px}
+.gap-item{padding:24px;display:flex;flex-direction:column;gap:12px}
+.gap-item h3{font-family:var(--display);font-weight:500;font-size:var(--step-1);line-height:1.3}
+.gap-item p{color:var(--muted);font-size:.94rem}
+.pitch{margin-top:28px;max-width:62ch;font-size:var(--step-1);border-left:2px solid var(--flare);padding-left:18px}
+
+/* learn */
+.topics{margin-top:40px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.topic{padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.topic h3{font-family:var(--display);font-weight:500;font-size:1rem;line-height:1.3}
+.topic p{font-size:.88rem;color:var(--muted);line-height:1.55}
+.topic .chips{margin-top:auto;padding-top:6px}
+
+/* roadmap */
+.road{margin-top:44px;padding:30px 26px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;position:relative}
+.wk{position:relative;padding-top:30px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.wk::before{content:"";position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;border:2px solid var(--flare);background:var(--ink);z-index:1}
+.wk::after{content:"";position:absolute;top:5px;left:12px;right:-18px;height:2px;background:linear-gradient(90deg,var(--flare),var(--cyan));opacity:.45}
+.wk:last-child::after{display:none}
+.wk:last-child::before{background:var(--flare)}
+.wk .w{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;color:var(--flare);text-transform:uppercase}
+.wk h3{font-family:var(--display);font-weight:500;font-size:.98rem;line-height:1.3}
+.wk p{font-size:.86rem;color:var(--muted);line-height:1.5}
+.road-note{margin-top:18px;color:var(--muted);font-size:.92rem;max-width:70ch}
+.road-note b{color:var(--fg)}
+
+/* formats */
+.formats{margin-top:40px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:stretch}
+.fmt{padding:26px;display:flex;flex-direction:column;gap:14px}
+.fmt.featured{border-color:var(--flare);background:linear-gradient(180deg,var(--flare-soft),var(--surface) 45%)}
+.fmt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.fmt h3{font-family:var(--display);font-weight:500;font-size:var(--step-1);line-height:1.25}
+.tag{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:999px;background:var(--flare);color:var(--flare-ink);white-space:nowrap;font-weight:500}
+.dur{font-family:var(--display);font-weight:800;font-size:var(--step-4);line-height:1;letter-spacing:-.03em}
+.dur small{font-family:var(--body);font-size:.9rem;font-weight:600;letter-spacing:0;color:var(--muted);margin-left:6px}
+.fmt ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:.92rem}
+.fmt li{display:flex;gap:10px;align-items:baseline}
+.fmt li::before{content:"";flex:none;width:6px;height:6px;border-radius:2px;background:var(--cyan);transform:translateY(-2px)}
+.best{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);font-size:.85rem;color:var(--muted)}
+.best b{color:var(--fg)}
+.when{margin-top:16px;padding:22px 26px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center}
+.days{display:flex;gap:6px}
+.day{width:46px;height:54px;border-radius:9px;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.day.on{background:var(--flare);border-color:var(--flare);color:var(--flare-ink);font-weight:500}
+.when-text{display:flex;flex-direction:column;gap:12px;min-width:0}
+.when-text p{font-size:.95rem}
+.when-text p b{color:var(--cyan);font-weight:600}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:var(--mono);font-size:.76rem}
+.flow span{padding:5px 11px;border-radius:7px;border:1px solid var(--line-strong)}
+.flow i{font-style:normal;color:var(--flare)}
+
+/* toolkit */
+.split{margin-top:40px;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px}
+.laptop{padding:26px;display:flex;flex-direction:column;gap:18px}
+.laptop h3,.credits h3{font-family:var(--display);font-weight:500;font-size:var(--step-1)}
+.spec{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 18px;font-size:.92rem}
+.spec dt{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.spec dd{margin:0}
+.laptop .note{font-size:.88rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.credits{padding:26px;display:flex;flex-direction:column;gap:16px}
+.credit-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.credit{background:var(--surface-solid);padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.credit-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.credit b{font-weight:700;font-size:.95rem}
+.credit em{font-style:normal;font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;color:var(--cyan);white-space:nowrap}
+.credit span{font-size:.84rem;color:var(--muted);line-height:1.5}
+.disclaim{font-size:.82rem;color:var(--muted)}
+.oss{margin-top:16px;padding:18px 22px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.oss .label{margin-right:4px}
+
+/* career */
+.services{margin-top:40px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.svc{padding:22px;display:flex;flex-direction:column;gap:12px}
+.svc svg{width:30px;height:30px;color:var(--flare)}
+.svc h3{font-family:var(--display);font-weight:500;font-size:1rem}
+.svc p{font-size:.88rem;color:var(--muted)}
+.intern{margin-top:14px;padding:26px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:28px;align-items:center}
+.intern h3{font-family:var(--display);font-weight:500;font-size:var(--step-2);line-height:1.25}
+.intern p{color:var(--muted);font-size:.95rem}
+.intern p b{color:var(--fg)}
+
+/* build */
+.projects{margin-top:40px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.proj{padding:22px;display:flex;flex-direction:column;gap:12px}
+.proj h3{font-family:var(--display);font-weight:500;font-size:1.05rem}
+.proj p{font-size:.9rem;color:var(--muted)}
+.proj .chips{margin-top:auto}
+
+/* join */
+#join .wordmark{font-size:clamp(2.6rem,1.4rem + 5vw,5.6rem)}
+.contact{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px 28px;font-size:.95rem;color:var(--muted)}
+.contact b{color:var(--fg);font-weight:600;user-select:all}
+.foot{margin-top:64px;padding-top:20px;border-top:1px solid var(--line);font-family:var(--mono);font-size:.74rem;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+
+/* responsive */
+@media (min-width:900px){
+  .wrap{padding-left:max(48px,env(safe-area-inset-left,0px));padding-right:max(88px,env(safe-area-inset-right,0px))}
+}
+@media (max-width:1100px){
+  .topics{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .road{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:30px}
+  .wk:nth-child(3n)::after{display:none}
+  .services{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:900px){
+  .veil{background:var(--veil-mobile)}
+  .dots{display:none}
+  .gap-grid,.formats,.projects{grid-template-columns:minmax(0,1fr)}
+  .split,.intern{grid-template-columns:minmax(0,1fr)}
+  .when{grid-template-columns:minmax(0,1fr)}
+  .topics{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:640px){
+  .slide{padding-block:96px 64px}
+  #start{padding-bottom:120px}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .topics,.services,.credit-list{grid-template-columns:minmax(0,1fr)}
+  .road{grid-template-columns:minmax(0,1fr);padding:24px 20px 24px 22px;row-gap:22px}
+  .wk{padding:0 0 0 28px}
+  .wk::before{top:4px}
+  .wk::after,.wk:nth-child(3n)::after{display:block;top:18px;left:5px;right:auto;bottom:-22px;width:2px;height:auto;background:linear-gradient(180deg,var(--flare),var(--cyan))}
+  .wk:last-child::after{display:none}
+  .counter{display:none}
+  .day{width:auto;flex:1;height:50px}
+  .days{width:100%}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .rise,.ticker-track{animation:none}
+  .tilt,.btn{transition:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="stage" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="#start" aria-label="5X Minds, back to the first slide"><span class="mark">5X</span>Minds</a>
+    <div class="top-right">
+      <span class="counter" id="counter" aria-live="polite">01 / 09</span>
+      <a class="btn btn-primary btn-sm" href="#formats">See programs</a>
+    </div>
+  </div>
+</header>
+<nav class="dots" id="dots" aria-label="Slides"></nav>
+
+<main>
+
+  <!-- 01 -->
+  <section class="slide hero" id="start" data-shape="brain" data-title="5X Minds">
+    <div class="wrap">
+      <div class="col">
+        <p class="eyebrow rise" style="--d:0">AI engineering programs for college students</p>
+        <h1 class="wordmark rise" style="--d:1" aria-label="5X Minds"><span class="five">5<i>X</i></span><span class="minds">Minds</span></h1>
+        <p class="hero-line rise" style="--d:2">From Python basics to <span>AI agents you can ship</span>, in 4 to 6 weeks.</p>
+        <p class="lead rise" style="--d:3">Practical batches on LLMs, RAG, LangChain, LangGraph, Hugging Face, open-source and frontier models. You write code in every session, on your own laptop, with a mentor beside you.</p>
+        <div class="cta-row rise" style="--d:4">
+          <a class="btn btn-primary" href="#learn">View the curriculum
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+          <a class="btn btn-ghost" href="#formats">Book the 3-day workshop</a>
+        </div>
+        <div class="facts rise" style="--d:5">
+          <div class="fact"><b>4–6 weeks</b><span>program length</span></div>
+          <div class="fact"><b>4–6 hrs</b><span>per practical session</span></div>
+          <div class="fact"><b>Fri–Mon</b><span>Fri · Sat · Sun · Mon</span></div>
+          <div class="fact"><b>3 days</b><span>hands-on workshop</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track" id="ticker"></div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="slide" id="gap" data-shape="galaxy" data-title="The gap">
+    <div class="wrap">
+      <p class="eyebrow"><span class="num">02</span>The gap</p>
+      <h2>College teaches how AI works. Recruiters hire students who have <em>built</em> with it.</h2>
+      <div class="gap-grid">
+        <div class="gap-item panel tilt">
+          <span class="label">Syllabus</span>
+          <h3>Course content trails the industry</h3>
+          <p>Agents, RAG and LangGraph went from research papers to job descriptions in about three years. Most college courses have not caught up yet.</p>
+        </div>
+        <div class="gap-item panel tilt">
+          <span class="label">Hiring</span>
+          <h3>Recruiters ask to see projects</h3>
+          <p>A GitHub repo with a working RAG app and a live demo link says more than a list of completed courses.</p>
+        </div>
+        <div class="gap-item panel tilt">
+          <span class="label">Interviews</span>
+          <h3>The vocabulary is a filter</h3>
+          <p>Interviewers check whether you can talk about tokens, embeddings, evals, latency and hallucinations with confidence.</p>
+        </div>
+      </div>
+      <p class="pitch">5X Minds closes that gap with practical sessions on the tools companies use today, and a portfolio of projects by the final day.</p>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="slide" id="learn" data-shape="helix" data-title="What you'll learn">
+    <div class="wrap">
+      <p class="eyebrow"><span class="num">03</span>What you'll learn</p>
+      <h2>The full modern AI stack, <em>hands-on</em>.</h2>
+      <div class="topics">
+        <article class="topic panel tilt">
+          <h3>Python for AI</h3>
+          <p>Notebooks, NumPy, pandas, calling APIs and writing clean, reusable scripts.</p>
+          <div class="chips"><span class="chip">Python 3</span><span class="chip">Jupyter</span><span class="chip">pandas</span></div>
+        </article>
+        <article class="topic panel tilt">
+          <h3>LLM fundamentals</h3>
+          <p>Tokens, embeddings, attention, context windows, temperature and prompting patterns.</p>
+          <div class="chips"><span class="chip">tokens</span><span class="chip">embeddings</span><span class="chip">prompts</span></div>
+        </article>
+        <article class="topic panel tilt">
+          <h3>GPT &amp; frontier models</h3>
+          <p>Build with GPT, Claude and Gemini APIs. Function calling, structured output, cost and latency.</p>
+          <div class="chips"><span class="chip">OpenAI</span><span class="chip">Claude</span><span class="chip">Gemini</span></div>
+        </article>
+        <article class="topic panel tilt">
+          <h3>Hugging Face &amp; open source</h3>
+          <p>Run Llama, Mistral, Qwen and Gemma locally or in Colab, and choose the right model from the Hub.</p>
+          <div class="chips"><span class="chip">Transformers</span><span class="chip">Ollama</span><span class="chip">HF Hub</span></div>
+        </article>
+        <article class="topic panel tilt">
+          <h3>RAG</h3>
+          <p>Chunking, embeddings, vector databases and retrieval checks, so answers come from your documents.</p>
+          <div class="chips"><span class="chip">FAISS</span><span class="chip">Chroma</span><span class="chip">rerankers</span></div>
+        </article>
+        <article class="topic panel tilt">
+          <h3>LangChain</h3>
+          <p>Chains, prompt templates, retrievers, tools and output parsers that turn a model into an app.</p>
+          <div class="chips"><span class="chip">LCEL</span><span class="chip">retrievers</span><span class="chip">tools</span></div>
+        </article>
+        <article class="topic panel tilt">
+          <h3>LangGraph &amp; agentic AI</h3>
+          <p>Stateful graphs, tool-using agents, memory, human-in-the-loop steps and multi-agent teams.</p>
+          <div class="chips"><span class="chip">LangGraph</span><span class="chip">MCP</span><span class="chip">agents</span></div>
+        </article>
+        <article class="topic panel tilt">
+          <h3>Datasets &amp; fine-tuning</h3>
+          <p>Collect, clean and label training data, fine-tune small models with LoRA, then measure the result.</p>
+          <div class="chips"><span class="chip">datasets</span><span class="chip">PEFT</span><span class="chip">LoRA</span></div>
+        </article>
+        <article class="topic panel tilt">
+          <h3>Image models</h3>
+          <p>How diffusion works, Stable Diffusion, ControlNet and vision-language models that read images.</p>
+          <div class="chips"><span class="chip">diffusers</span><span class="chip">SDXL</span><span class="chip">VLMs</span></div>
+        </article>
+        <article class="topic panel tilt">
+          <h3>AI-assisted coding</h3>
+          <p>Pair-program with Claude Code, GitHub Copilot and Cursor, then review and test what the AI writes.</p>
+          <div class="chips"><span class="chip">Claude Code</span><span class="chip">Copilot</span><span class="chip">Cursor</span></div>
+        </article>
+        <article class="topic panel tilt">
+          <h3>Deploy &amp; share</h3>
+          <p>Put your project on a public link with a simple UI that recruiters can open and try.</p>
+          <div class="chips"><span class="chip">Gradio</span><span class="chip">Streamlit</span><span class="chip">HF Spaces</span></div>
+        </article>
+        <article class="topic panel tilt">
+          <h3>Industry language &amp; pitching</h3>
+          <p>Explain your work like an engineer and pitch it like a founder, from evals and guardrails to demo day.</p>
+          <div class="chips"><span class="chip">evals</span><span class="chip">guardrails</span><span class="chip">demo day</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="slide" id="roadmap" data-shape="torus" data-title="6-week roadmap">
+    <div class="wrap">
+      <p class="eyebrow"><span class="num">04</span>The roadmap</p>
+      <h2>Six weeks, one skill stacked on the <em>last</em>.</h2>
+      <div class="road panel">
+        <div class="wk"><span class="w">Week 1</span><h3>Setup &amp; Python for AI</h3><p>Install the toolchain, refresh Python and start coding with an AI assistant.</p></div>
+        <div class="wk"><span class="w">Week 2</span><h3>LLMs &amp; frontier models</h3><p>How LLMs work, prompting, and the GPT, Claude and Gemini APIs.</p></div>
+        <div class="wk"><span class="w">Week 3</span><h3>Open source &amp; Hugging Face</h3><p>Run open models locally, Transformers pipelines and model selection.</p></div>
+        <div class="wk"><span class="w">Week 4</span><h3>RAG with LangChain</h3><p>Embeddings, vector stores and a chatbot over your own documents.</p></div>
+        <div class="wk"><span class="w">Week 5</span><h3>Agents with LangGraph</h3><p>Tools, memory, multi-agent workflows and how to evaluate them.</p></div>
+        <div class="wk"><span class="w">Week 6</span><h3>Fine-tuning, images &amp; demo day</h3><p>LoRA on your dataset, image models, deployment and your capstone pitch.</p></div>
+      </div>
+      <p class="road-note">The <b>4-week Sprint</b> follows the core path through Python, LLMs, RAG and agents. The <b>6-week Deep Track</b> adds open-source models, fine-tuning, image models and demo day.</p>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section class="slide" id="formats" data-shape="cube" data-title="Programs & schedule">
+    <div class="wrap">
+      <p class="eyebrow"><span class="num">05</span>Programs &amp; schedule</p>
+      <h2>Pick the pace that fits your <em>semester</em>.</h2>
+      <div class="formats">
+        <article class="fmt panel tilt">
+          <div class="fmt-head"><h3>AI Kickstart Workshop</h3></div>
+          <p class="dur">3<small>days · 4–6 hrs a day</small></p>
+          <ul>
+            <li>LLM and prompting basics</li>
+            <li>GPT, Gemini and open models, hands-on</li>
+            <li>AI coding tools set up on your laptop</li>
+            <li>Build your first RAG chatbot</li>
+          </ul>
+          <p class="best"><b>Best for:</b> first- and second-years, or anyone who wants a fast, practical start.</p>
+        </article>
+        <article class="fmt panel tilt">
+          <div class="fmt-head"><h3>4-Week Sprint</h3></div>
+          <p class="dur">4<small>weeks · 4–6 hrs a session</small></p>
+          <ul>
+            <li>Python for AI</li>
+            <li>LLMs and frontier model APIs</li>
+            <li>RAG with LangChain</li>
+            <li>Your first LangGraph agent</li>
+            <li>One capstone project</li>
+          </ul>
+          <p class="best"><b>Best for:</b> students who want job-ready AI basics in one month.</p>
+        </article>
+        <article class="fmt panel tilt featured">
+          <div class="fmt-head"><h3>6-Week Deep Track</h3><span class="tag">Most complete</span></div>
+          <p class="dur">6<small>weeks · 4–6 hrs a session</small></p>
+          <ul>
+            <li>Everything in the Sprint</li>
+            <li>Hugging Face and open-source models</li>
+            <li>Datasets and LoRA fine-tuning</li>
+            <li>Image models and deployment</li>
+            <li>Career launchpad and demo day</li>
+          </ul>
+          <p class="best"><b>Best for:</b> final-years aiming for AI internships and roles.</p>
+        </article>
+      </div>
+      <div class="when panel">
+        <div class="days" aria-label="Session days: Friday, Saturday, Sunday and Monday">
+          <span class="day on">MON</span><span class="day">TUE</span><span class="day">WED</span><span class="day">THU</span><span class="day on">FRI</span><span class="day on">SAT</span><span class="day on">SUN</span>
+        </div>
+        <div class="when-text">
+          <p>Sessions run on <b>Friday, Saturday, Sunday and Monday</b>, 4–6 hours each, so they fit around college weekdays. Every session is practical, with laptops open.</p>
+          <div class="flow" aria-label="How a session runs"><span>Concept</span><i>→</i><span>Live build</span><i>→</i><span>Your lab</span><i>→</i><span>Show &amp; review</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section class="slide" id="toolkit" data-shape="knot" data-title="Laptop & free credits">
+    <div class="wrap">
+      <p class="eyebrow"><span class="num">06</span>Your setup</p>
+      <h2>Bring your laptop. We'll help you get the <em>credits</em>.</h2>
+      <div class="split">
+        <div class="laptop panel tilt">
+          <h3>Bring your own laptop</h3>
+          <dl class="spec">
+            <dt>OS</dt><dd>Windows 10/11, macOS or Linux</dd>
+            <dt>Memory</dt><dd>8 GB RAM minimum, 16 GB recommended</dd>
+            <dt>Storage</dt><dd>20 GB free space</dd>
+            <dt>GPU</dt><dd>Not required. Heavy training runs on free cloud GPUs.</dd>
+          </dl>
+          <p class="note">In the first session we install Python, VS Code, Git and an AI coding assistant together, so nobody falls behind on setup.</p>
+        </div>
+        <div class="credits panel">
+          <h3>Free tiers &amp; student credits we'll help you claim</h3>
+          <div class="credit-list">
+            <div class="credit"><div class="credit-top"><b>Google Colab</b><em>FREE GPU</em></div><span>Cloud notebooks with GPU time for training labs.</span></div>
+            <div class="credit"><div class="credit-top"><b>Kaggle Notebooks</b><em>FREE GPU</em></div><span>Weekly GPU hours and thousands of public datasets.</span></div>
+            <div class="credit"><div class="credit-top"><b>Hugging Face</b><em>FREE TIER</em></div><span>Model hub, datasets and Spaces to host your demos.</span></div>
+            <div class="credit"><div class="credit-top"><b>Google AI Studio</b><em>FREE TIER</em></div><span>A Gemini API key to build with a frontier model.</span></div>
+            <div class="credit"><div class="credit-top"><b>Groq</b><em>FREE TIER</em></div><span>A fast API for open models such as Llama.</span></div>
+            <div class="credit"><div class="credit-top"><b>GitHub Student Pack</b><em>STUDENT</em></div><span>GitHub Copilot for verified students, plus partner offers.</span></div>
+            <div class="credit"><div class="credit-top"><b>Azure for Students</b><em>STUDENT</em></div><span>Cloud credit for verified students, no credit card needed.</span></div>
+            <div class="credit"><div class="credit-top"><b>Ollama &amp; LM Studio</b><em>LOCAL</em></div><span>Run open models on your own laptop, offline and free.</span></div>
+          </div>
+          <p class="disclaim">Free tiers and student offers change often. We check what's available at the start of every batch and help you sign up where you're eligible.</p>
+        </div>
+      </div>
+      <div class="oss panel">
+        <span class="label">Open-source toolkit</span>
+        <div class="chips">
+          <span class="chip">VS Code</span><span class="chip">Git &amp; GitHub</span><span class="chip">Jupyter</span><span class="chip">Ollama</span><span class="chip">LangChain</span><span class="chip">LangGraph</span><span class="chip">Transformers</span><span class="chip">PEFT</span><span class="chip">Chroma</span><span class="chip">FAISS</span><span class="chip">Gradio</span><span class="chip">Streamlit</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section class="slide" id="career" data-shape="spiral" data-title="Career launchpad">
+    <div class="wrap">
+      <p class="eyebrow"><span class="num">07</span>Career launchpad</p>
+      <h2>Skills get you ready. We help recruiters <em>find</em> you.</h2>
+      <div class="services">
+        <article class="svc panel tilt">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h11l6 6v20H8z"/><path d="M19 3v6h6M12 15h9M12 20h9M12 25h5"/></svg>
+          <h3>Professional resume</h3>
+          <p>An ATS-friendly resume written around your AI projects, with results recruiters notice.</p>
+        </article>
+        <article class="svc panel tilt">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="14" cy="14" r="8"/><path d="M20 20l8 8M10.5 14h7M14 10.5v7"/></svg>
+          <h3>Naukri profile setup</h3>
+          <p>Headline, key skills and project sections tuned to the searches recruiters run.</p>
+        </article>
+        <article class="svc panel tilt">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="24" height="24" rx="4"/><circle cx="16" cy="13" r="4"/><path d="M9 24c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg>
+          <h3>LinkedIn setup</h3>
+          <p>Headline, About section, featured projects and a simple plan for sharing your work.</p>
+        </article>
+        <article class="svc panel tilt">
+          <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="16" r="12"/><path d="M4 16h24M16 4c3.5 3.5 5 7.5 5 12s-1.5 8.5-5 12c-3.5-3.5-5-7.5-5-12s1.5-8.5 5-12z"/></svg>
+          <h3>Your own website</h3>
+          <p>A personal portfolio site on your own link, showing your projects and resume.</p>
+        </article>
+      </div>
+      <div class="intern panel">
+        <h3>Internship guidance &amp; referrals</h3>
+        <p>We share openings we hear about, run mock interviews and refer students where we have connections. <b>Referrals are guidance, not a commitment or a placement guarantee.</b> We'll tell you plainly what's realistic and help you work toward it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 -->
+  <section class="slide" id="build" data-shape="wave" data-title="What you'll build">
+    <div class="wrap">
+      <p class="eyebrow"><span class="num">08</span>Your portfolio</p>
+      <h2>Leave with projects you can <em>demo</em> in an interview.</h2>
+      <div class="projects">
+        <article class="proj panel tilt">
+          <h3>Chat with your notes</h3>
+          <p>Upload your semester PDFs and ask questions. Every answer shows the page it came from.</p>
+          <div class="chips"><span class="chip">RAG</span><span class="chip">LangChain</span><span class="chip">Chroma</span></div>
+        </article>
+        <article class="proj panel tilt">
+          <h3>Research agent</h3>
+          <p>An agent that searches, reads sources and writes a short report, with you approving each step.</p>
+          <div class="chips"><span class="chip">LangGraph</span><span class="chip">tools</span><span class="chip">memory</span></div>
+        </article>
+        <article class="proj panel tilt">
+          <h3>Model arena</h3>
+          <p>Send one prompt to four models and compare quality, speed and cost side by side.</p>
+          <div class="chips"><span class="chip">GPT</span><span class="chip">Claude</span><span class="chip">Gemini</span><span class="chip">Llama</span></div>
+        </article>
+        <article class="proj panel tilt">
+          <h3>Your fine-tuned model</h3>
+          <p>A small open model fine-tuned on a dataset you collect and clean yourself.</p>
+          <div class="chips"><span class="chip">HF datasets</span><span class="chip">LoRA</span><span class="chip">evals</span></div>
+        </article>
+        <article class="proj panel tilt">
+          <h3>Image studio</h3>
+          <p>A text-to-image app with style controls, hosted on Hugging Face Spaces.</p>
+          <div class="chips"><span class="chip">Stable Diffusion</span><span class="chip">Gradio</span></div>
+        </article>
+        <article class="proj panel tilt">
+          <h3>Portfolio site</h3>
+          <p>Your own website, built with an AI coding assistant, showing everything above.</p>
+          <div class="chips"><span class="chip">HTML/CSS</span><span class="chip">AI coding</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 -->
+  <section class="slide" id="join" data-shape="text" data-title="Join 5X Minds">
+    <div class="wrap">
+      <div class="col">
+        <p class="eyebrow"><span class="num">09</span>Join the next batch</p>
+        <h2 class="wordmark" aria-label="5X Minds"><span class="five">5<i>X</i></span><span class="minds">Minds</span></h2>
+        <p class="hero-line">Multiply what you can <span>build with AI</span>.</p>
+        <p class="lead">Batches stay small so every student gets hands-on help. Start with the 3-day workshop, or go all in with the 6-week Deep Track.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" id="enroll" href="#formats" hidden>Reserve your seat
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+          <a class="btn btn-ghost" href="#formats">Compare programs</a>
+        </div>
+        <div class="contact" id="contact" hidden></div>
+      </div>
+      <div class="foot"><span>© 2026 5X Minds</span><span>AI training for college students</span></div>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+  // Fill these in to show the enrol button and contact line on the last slide.
+  const CONTACT = { enrollUrl: "", phone: "", email: "", instagram: "" };
+
+  const enroll = document.getElementById('enroll');
+  if (CONTACT.enrollUrl) { enroll.href = CONTACT.enrollUrl; enroll.target = '_blank'; enroll.rel = 'noopener'; enroll.hidden = false; }
+  const contactEl = document.getElementById('contact');
+  [['Call / WhatsApp', CONTACT.phone], ['Email', CONTACT.email], ['Instagram', CONTACT.instagram]].forEach(([k, v]) => {
+    if (!v) return;
+    const s = document.createElement('span'); s.textContent = k + ': ';
+    const b = document.createElement('b'); b.textContent = v; s.appendChild(b);
+    contactEl.appendChild(s); contactEl.hidden = false;
+  });
+
+  // Ticker of terms students will be able to use
+  const terms = ['tokens','embeddings','context window','RAG','vector database','LangChain','LangGraph','agents','tool calling','MCP','LoRA','QLoRA','fine-tuning','quantization','Hugging Face','diffusion','evals','guardrails','hallucination','latency','prompt engineering','open-source LLMs'];
+  const ticker = document.getElementById('ticker');
+  [...terms, ...terms].forEach(t => { const s = document.createElement('span'); s.textContent = t; ticker.appendChild(s); });
+
+  // Deck navigation
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const slides = [...document.querySelectorAll('.slide')];
+  const total = slides.length;
+  const pad = n => String(n).padStart(2, '0');
+  const counter = document.getElementById('counter');
+  const dotsEl = document.getElementById('dots');
+  const bar = document.getElementById('progress');
+  slides.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.title = s.dataset.title;
+    b.setAttribute('aria-label', `Slide ${i + 1}: ${s.dataset.title}`);
+    b.addEventListener('click', () => go(i));
+    dotsEl.appendChild(b);
+  });
+  const dots = [...dotsEl.children];
+  const listeners = [];
+  let active = -1;
+  function go(i) {
+    i = Math.max(0, Math.min(total - 1, i));
+    slides[i].scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }
+  function activate(i) {
+    if (i === active) return;
+    active = i;
+    counter.textContent = `${pad(i + 1)} / ${pad(total)}`;
+    dots.forEach((d, k) => d.setAttribute('aria-current', k === i ? 'true' : 'false'));
+    listeners.forEach(f => f(slides[i]));
+  }
+  function onScroll() {
+    const mid = innerHeight * 0.5;
+    let idx = 0;
+    for (let i = 0; i < total; i++) if (slides[i].getBoundingClientRect().top <= mid) idx = i;
+    activate(idx);
+    const max = document.documentElement.scrollHeight - innerHeight;
+    bar.style.transform = `scaleX(${max > 0 ? Math.min(1, scrollY / max) : 0})`;
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', onScroll);
+  addEventListener('keydown', e => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.target.closest && e.target.closest('input,textarea,select')) return;
+    if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'ArrowRight') { e.preventDefault(); go(active + 1); }
+    else if (e.key === 'ArrowUp' || e.key === 'PageUp' || e.key === 'ArrowLeft') { e.preventDefault(); go(active - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); go(0); }
+    else if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+  });
+  if (location.hash) { const el = document.getElementById(location.hash.slice(1)); if (el) el.scrollIntoView(); }
+
+  // Card tilt + glow follow
+  if (!reduce && matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll('.tilt').forEach(el => {
+      el.addEventListener('pointermove', e => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform = `perspective(900px) rotateX(${(-y * 7).toFixed(2)}deg) rotateY(${(x * 9).toFixed(2)}deg)`;
+        el.style.setProperty('--mx', `${((x + 0.5) * 100).toFixed(1)}%`);
+        el.style.setProperty('--my', `${((y + 0.5) * 100).toFixed(1)}%`);
+      });
+      el.addEventListener('pointerleave', () => { el.style.transform = ''; });
+    });
+  }
+
+  // 3D particle mind
+  const canvas = document.getElementById('stage');
+  let renderer = null;
+  if (window.THREE) {
+    try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); }
+    catch (err) { renderer = null; }
+  }
+  if (!renderer) { canvas.hidden = true; onScroll(); return; }
+
+  const css = getComputedStyle(document.documentElement);
+  const token = n => new THREE.Color(css.getPropertyValue(n).trim());
+  const FLARE = token('--flare'), CYAN = token('--cyan'), FG = token('--fg');
+
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x000000, 0);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
+  camera.position.set(0, 0, 8);
+
+  const small = innerWidth < 700;
+  const N = small ? 1500 : 2800;
+  const rand = Math.random;
+  const TAU = Math.PI * 2;
+  const tiltX = (p, a) => [p[0], p[1] * Math.cos(a) - p[2] * Math.sin(a), p[1] * Math.sin(a) + p[2] * Math.cos(a)];
+  const make = fn => { const a = new Float32Array(N * 3); for (let i = 0; i < N; i++) a.set(fn(i), i * 3); return a; };
+  const GA = Math.PI * (3 - Math.sqrt(5));
+
+  const shapes = {
+    brain: make(i => {
+      const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), th = GA * i;
+      const x = Math.cos(th) * r, z = Math.sin(th) * r;
+      const a = Math.atan2(z, x), phi = Math.acos(y);
+      let f = 1 + 0.06 * Math.sin(a * 6 + phi * 5) * Math.sin(phi * 7);
+      if (Math.abs(x) < 0.07) f *= 0.9;
+      const R = 2.05 * f;
+      return [x * R * 1.22, y * R * 0.98, z * R * 1.05];
+    }),
+    galaxy: make(i => {
+      const arm = i % 3, t = Math.pow(rand(), 0.7) * 3.4, a = t * 1.9 + arm * TAU / 3 + (rand() - 0.5) * 0.5;
+      return tiltX([Math.cos(a) * t, (rand() - 0.5) * 0.35 * (1.2 - t / 3.4), Math.sin(a) * t], 1.1);
+    }),
+    helix: make(i => {
+      const strand = i % 2, t = i / N, a = t * Math.PI * 10 + strand * Math.PI, y = (t - 0.5) * 6.2;
+      const x1 = Math.cos(a) * 1.1, z1 = Math.sin(a) * 1.1;
+      if (i % 9 === 0) { const k = rand(); return [x1 - 2 * x1 * k, y, z1 - 2 * z1 * k]; }
+      const j = 0.09;
+      return [x1 + (rand() - 0.5) * j, y + (rand() - 0.5) * j, z1 + (rand() - 0.5) * j];
+    }),
+    torus: make(() => {
+      const u = rand() * TAU, v = rand() * TAU, R = 2.1, r = 0.55;
+      return tiltX([(R + r * Math.cos(v)) * Math.cos(u), r * Math.sin(v), (R + r * Math.cos(v)) * Math.sin(u)], 1.15);
+    }),
+    cube: make(i => {
+      const s = 1.55;
+      let u = rand() * 2 - 1, v = Math.round((rand() * 2 - 1) * 3) / 3;
+      if (rand() < 0.5) { const t = u; u = v; v = t; }
+      const f = i % 6, w = f < 3 ? s : -s, ax = f % 3;
+      u *= s; v *= s;
+      return ax === 0 ? [w, u, v] : ax === 1 ? [u, w, v] : [u, v, w];
+    }),
+    knot: make(i => {
+      const t = (i / N) * TAU, r = Math.cos(3 * t) + 2.2, j = 0.32;
+      return [r * Math.cos(2 * t) * 0.85 + (rand() - 0.5) * j, r * Math.sin(2 * t) * 0.85 + (rand() - 0.5) * j, -Math.sin(3 * t) * 0.95 + (rand() - 0.5) * j];
+    }),
+    spiral: make(i => {
+      const t = i / N, a = t * Math.PI * 16, r = 0.25 + t * 1.9;
+      return [Math.cos(a) * r + (rand() - 0.5) * 0.1, t * 5.4 - 2.7, Math.sin(a) * r + (rand() - 0.5) * 0.1];
+    }),
+    wave: make(i => {
+      const side = Math.ceil(Math.sqrt(N)), x = ((i % side) / side - 0.5) * 6.4, z = (Math.floor(i / side) / side - 0.5) * 6.4;
+      return tiltX([x, 0.45 * Math.sin(x * 1.2) * Math.cos(z * 1.1), z], 0.55);
+    })
+  };
+  function textShape() {
+    const W = 640, H = 300, c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const g = c.getContext('2d');
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.font = '800 250px Unbounded, "Arial Black", sans-serif';
+    g.fillText('5X', W / 2, H / 2 + 10);
+    const d = g.getImageData(0, 0, W, H).data, pts = [];
+    for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) if (d[(y * W + x) * 4 + 3] > 140) pts.push(x, y);
+    if (!pts.length) return shapes.brain;
+    return make(() => { const k = Math.floor(rand() * pts.length / 2) * 2; return [(pts[k] - W / 2) / W * 6.4, -(pts[k + 1] - H / 2) / W * 6.4, (rand() - 0.5) * 0.6]; });
+  }
+  shapes.text = textShape();
+
+  // Fraction of the half-width to push each form right (desktop), and its scale
+  const LOOK = { brain: [0.4, 1], galaxy: [0.45, 1], helix: [0.52, 0.85], torus: [0.5, 0.9], cube: [0.5, 0.95], knot: [0.5, 0.8], spiral: [0.52, 0.9], wave: [0.45, 0.75], text: [0.48, 0.95] };
+
+  // Particles
+  const pos = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) {
+    const u = rand() * TAU, v = Math.acos(2 * rand() - 1), r = 8 + rand() * 8;
+    pos.set([r * Math.sin(v) * Math.cos(u), r * Math.sin(v) * Math.sin(u), r * Math.cos(v)], i * 3);
+  }
+  const col = new Float32Array(N * 3);
+  for (let i = 0; i < N; i++) {
+    const r = rand(), c = r < 0.5 ? FLARE : r < 0.88 ? CYAN : FG, b = 0.55 + rand() * 0.45;
+    col.set([c.r * b, c.g * b, c.b * b], i * 3);
+  }
+  const speed = new Float32Array(N);
+  for (let i = 0; i < N; i++) speed[i] = 0.02 + rand() * 0.035;
+
+  function sprite() {
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const g = c.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.25, 'rgba(255,255,255,.7)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  }
+  const dot = sprite();
+  const pGeo = new THREE.BufferGeometry();
+  const pAttr = new THREE.BufferAttribute(pos, 3);
+  pGeo.setAttribute('position', pAttr);
+  pGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  const points = new THREE.Points(pGeo, new THREE.PointsMaterial({ size: small ? 0.07 : 0.06, map: dot, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true }));
+
+  // Synapse lines between neighbours on the brain form
+  const B = shapes.brain, pairs = [], links = new Uint8Array(N), maxD2 = 0.075;
+  for (let i = 0; i < N; i++) {
+    if (links[i] >= 2) continue;
+    for (let j = i + 1; j < N; j++) {
+      if (links[j] >= 3) continue;
+      const dx = B[i * 3] - B[j * 3], dy = B[i * 3 + 1] - B[j * 3 + 1], dz = B[i * 3 + 2] - B[j * 3 + 2];
+      if (dx * dx + dy * dy + dz * dz < maxD2) { pairs.push(i, j); links[i]++; links[j]++; if (links[i] >= 2) break; }
+    }
+  }
+  const lPos = new Float32Array(pairs.length * 3);
+  const lGeo = new THREE.BufferGeometry();
+  const lAttr = new THREE.BufferAttribute(lPos, 3);
+  lGeo.setAttribute('position', lAttr);
+  const lineMat = new THREE.LineBasicMaterial({ color: CYAN, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+  const lines = new THREE.LineSegments(lGeo, lineMat);
+
+  const core = new THREE.LineSegments(
+    new THREE.WireframeGeometry(new THREE.IcosahedronGeometry(0.75, 1)),
+    new THREE.LineBasicMaterial({ color: FLARE, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false })
+  );
+
+  const group = new THREE.Group();
+  group.add(points, lines, core);
+  scene.add(group);
+
+  // Distant stars
+  const SN = small ? 400 : 900, sPos = new Float32Array(SN * 3);
+  for (let i = 0; i < SN; i++) {
+    const u = rand() * TAU, v = Math.acos(2 * rand() - 1), r = 14 + rand() * 26;
+    sPos.set([r * Math.sin(v) * Math.cos(u), r * Math.sin(v) * Math.sin(u), r * Math.cos(v)], i * 3);
+  }
+  const sGeo = new THREE.BufferGeometry();
+  sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+  const stars = new THREE.Points(sGeo, new THREE.PointsMaterial({ size: 0.12, color: FG, map: dot, transparent: true, opacity: 0.5, depthWrite: false, sizeAttenuation: true }));
+  scene.add(stars);
+
+  let shape = 'brain', tgt = shapes.brain, lineTarget = 0.28, coreTarget = 1, coreScale = 0.001;
+  listeners.push(sec => {
+    shape = sec.dataset.shape in shapes ? sec.dataset.shape : 'brain';
+    tgt = shapes[shape];
+    lineTarget = shape === 'brain' ? 0.28 : 0.035;
+    coreTarget = shape === 'brain' ? 1 : 0.001;
+  });
+  if (document.fonts && document.fonts.load) {
+    document.fonts.load('800 100px Unbounded').then(() => {
+      shapes.text = textShape();
+      if (shape === 'text') tgt = shapes.text;
+    }).catch(() => {});
+  }
+
+  let mx = 0, my = 0;
+  addEventListener('pointermove', e => { mx = e.clientX / innerWidth * 2 - 1; my = e.clientY / innerHeight * 2 - 1; }, { passive: true });
+
+  function resize() {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  addEventListener('resize', resize);
+
+  const halfW = () => Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z * camera.aspect;
+  let lastY = scrollY, spin = 0, gs = 1;
+  group.position.x = innerWidth < 900 ? 0 : LOOK.brain[0] * halfW();
+
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (reduce) pos.set(tgt);
+    else for (let i = 0; i < N; i++) {
+      const k = i * 3, s = speed[i];
+      pos[k] += (tgt[k] - pos[k]) * s;
+      pos[k + 1] += (tgt[k + 1] - pos[k + 1]) * s;
+      pos[k + 2] += (tgt[k + 2] - pos[k + 2]) * s;
+    }
+    pAttr.needsUpdate = true;
+    for (let p = 0, q = 0; p < pairs.length; p++, q += 3) {
+      const a = pairs[p] * 3;
+      lPos[q] = pos[a]; lPos[q + 1] = pos[a + 1]; lPos[q + 2] = pos[a + 2];
+    }
+    lAttr.needsUpdate = true;
+    lineMat.opacity += (lineTarget - lineMat.opacity) * 0.05;
+
+    const narrow = innerWidth < 900, look = LOOK[shape];
+    const tx = narrow ? 0 : look[0] * halfW(), ts = look[1] * (narrow ? 0.8 : 1);
+    group.position.x += (tx - group.position.x) * 0.04;
+    gs += (ts - gs) * 0.04;
+    group.scale.setScalar(gs);
+    coreScale += (coreTarget - coreScale) * 0.06;
+    core.scale.setScalar(coreScale);
+
+    if (!reduce) {
+      const vy = scrollY - lastY; lastY = scrollY;
+      spin += (Math.min(Math.abs(vy), 80) * 0.0005 - spin) * 0.08;
+      if (shape === 'text') {
+        const base = Math.round(group.rotation.y / TAU) * TAU;
+        group.rotation.y += (base + Math.sin(now * 0.0006) * 0.35 - group.rotation.y) * 0.05;
+      } else group.rotation.y += 0.0022 + spin;
+      group.rotation.x += (my * 0.3 - group.rotation.x) * 0.05;
+      core.rotation.x += 0.004; core.rotation.y -= 0.003;
+      stars.rotation.y += 0.0003;
+      camera.position.x += (mx * 0.5 - camera.position.x) * 0.04;
+      camera.position.y += (-my * 0.35 - camera.position.y) * 0.04;
+      camera.lookAt(0, 0, 0);
+    }
+    renderer.render(scene, camera);
+  }
+  onScroll();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
